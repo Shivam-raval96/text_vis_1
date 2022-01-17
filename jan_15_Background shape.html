@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <!-- Load in the d3 library -->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style type="text/css">
+    /* 13. Basic Styling with CSS */
+
+    /* Style the lines by removing the fill and applying a stroke */
+    .line {
+      fill: #ffab00;
+      stroke: #ffab00;
+      stroke-width: 3;
+    }
+
+    .area {
+      fill: lightsteelblue;
+      stroke-width: 0;
+    }
+
+    /* Style the dots by assigning a fill and stroke */
+    .dot {
+      fill: #ffab00;
+      stroke: #fff;
+    }
+
+  </style>
+</head>
+<body>
+
+
+
+
+<script>
+
+  // 2. Use the margin convention practice
+  var margin = {top: 50, right: 50, bottom: 50, left: 50}
+    , width = window.innerWidth - margin.left - margin.right // Use the window's width
+    , height = window.innerHeight - margin.top - margin.bottom; // Use the window's height
+
+  // The number of datapoints
+  var n = 10;
+
+  // 5. X scale will use the index of our data
+  var xScale = d3.scaleLinear()
+    .domain([0, n-1]) // input
+    .range([0, width]); // output
+
+  // 6. Y scale will use the randomly generate number
+  var yScale = d3.scaleLinear()
+    .domain([0, 10]) // input
+    .range([30, 5]); // output
+
+  // 7. d3's line generator
+  /*var line = d3.line()
+    .x(function(d, i) { return xScale(i); }) // set the x values for the line generator
+    .y(function(d) { return yScale(d.y); }) // set the y values for the line generator
+    .curve(d3.curveMonotoneX) // apply smoothing to the line
+*/
+  // 8. An array of objects of length N. Each object has key -> value pair, the key being "y" and the value is a random number
+  var dataset = d3.range(n).map(function(d) { return {"y": Math.ceil(d3.randomUniform(0,10)()) } })
+
+ // console.log(dataset)
+
+  // 1. Add the SVG to the page and employ #2
+  var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  /*var area = d3.area()
+    .x(function(d, i) { return xScale(i); })
+    .y0(height)
+    .y1(function(d) { return yScale(d.y); })
+    .curve(d3.curveMonotoneX);
+
+  // 9. Append the path, bind the data, and call the line generator
+  svg.append("path")
+    .datum(dataset) // 10. Binds data to the line
+    .attr("class", "area")
+    .attr("d", area)
+    .attr("fill", "#ffab00");*/
+  var colors = d3.scaleLinear()
+    .domain([0,1])
+    .range([ "#3288BD", "#ABDDA4", "#FFFFBF"]);
+
+  var crayons = d3.scaleLinear()
+    .domain([0, 10])
+    .range(["white", "green"])
+  var area = d3.area()
+    .x0( function(d, i) { return xScale(i); } )
+    .x1( function(d, i) { return xScale(i); } )
+    .y0( function(d) { return yScale(d.y); } )
+    .y1(  function(d) { return -yScale(d.y); } )
+    .curve(d3.curveMonotoneX);
+
+  svg.append('path')
+    .attr('class', 'area')
+    .attr("id", "curve")
+    .datum(dataset)
+    .attr('d', area);
+
+  svg.append("linearGradient")
+    .attr("id", "area-gradient")
+    .attr("gradientUnits", "userSpaceOnUse")
+    .attr("y1", 0).attr("x1", 0)
+    .attr("y2", 0).attr("x2", width)
+    .selectAll("stop")
+    .data([
+      {offset: "0%", color: "red"},
+      {offset: "30%", color: "red"},
+      {offset: "45%", color: "black"},
+      {offset: "55%", color: "black"},
+      {offset: "60%", color: "lawngreen"},
+      {offset: "100%", color: "lawngreen"}
+    ])
+    .enter().append("stop")
+    .attr("offset", function(d) { return d.offset; })
+    .attr("stop-color", function(d) { return d.color; })
+const textdat = ["This", "is", "a", "test","the", "background", "is", "also","a", "test"]
+
+  var innerSVG = svg.append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("overflow", "visible")
+    .append("g")
+
+  for (let i = 0; i < textdat.length; i++) {
+    innerSVG.attr("id", `textshow`)
+    .append("text")
+    .attr("text-anchor","middle")
+    .attr("x",xScale(i))
+    .attr("y", 0)
+    .attr("font-size",5/dataset[i].y + "em" )
+    .attr("dy", ".35em")
+    .attr("vertical-align", "middle")
+    .text(textdat[i]);
+  //if i%10==0 append p
+    }
+  svg.append("text")
+    .attr("id", `showbutton`)
+    .attr("text-anchor","middle")
+    .attr("x",width-10)
+    .attr("y", 100)
+    .attr("font-size","1em" )
+    .attr("dy", ".35em")
+    .attr("vertical-align", "middle")
+    .text("Show Text")
+    .on("click", function(){
+    // Determine if current line is visible
+    var active   = textshow.active ? false : true,
+      newOpacity = active ? 0 : 1;
+    // Hide or show the elements
+    d3.select("#textshow").style("opacity", newOpacity);
+    // Update whether or not the elements are active
+    textshow.active = active;
+  })
+
+  /*const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let text = ctx.measureText('Hello world');
+  console.log(text.width);  // 56;*/
+
+
+
+
+</script>
+
+
+</body>
+</html>

@@ -11,10 +11,27 @@
     }
 
   </style>
-  <title>Title</title>
+  <title>Duration of Utterance Visualization</title>
 </head>
 <body>
 <script>
+
+  var words = []
+  var time = []
+  var space = []
+  var n = 0
+
+  d3.csv("vis_mw_fv_new.csv", function load_data(data) {
+    for (var i = 0; i < data.length; i++) {
+      words[i] = data[i].Word
+      time[i] = data[i].std_time_spent
+      space[i] = data[i].post_space
+    }
+
+    n = data.length;
+  });
+
+
   var gui = new dat.GUI({
     height : 5 * 32 - 1
   });
@@ -24,15 +41,17 @@
     curve:20,
     show: true
   };
-  make_viz(params.font,params.curve)
-  gui.add(params, 'font').name('Font Size').min(1).max(10).step(0.5).onFinishChange(function(){
+
+
+
+  gui.add(params, 'font').name('Font Size').min(1).max(10).step(0.5).onChange(function(){
     d3.select("svg").remove()
-    make_viz(params.font,params.curve)
+    make_viz(words,time,space,params.font,params.curve)
   })
 
-  gui.add(params, 'curve').name('Curve Height').min(1).max(30).step(0.5).onFinishChange(function(){
+  gui.add(params, 'curve').name('Curve Height').min(1).max(30).step(0.5).onChange(function(){
     d3.select("svg").remove()
-    make_viz(params.font,params.curve)
+    make_viz(words,time,space,params.font,params.curve)
   })
  gui.add(params, 'show').name('Text').listen().onChange(function(){
 
@@ -47,16 +66,16 @@
 
 
  });
+  console.log("hello")
+  make_viz(words,time,space,params.font,params.curve)
 
 
 
-function make_viz(font,curve) {
+
+function make_viz(words,time,space,font,curve) {
 
 
-  var words = []
-  var time = []
-  var space = []
-  var n = 0
+
 
 
   var margin = {top: 50, right: 50, bottom: 50, left: 50}
@@ -86,28 +105,21 @@ function make_viz(font,curve) {
   function makearea(j) {
     var area = d3.area()
       .x(function (d, i) {
-        return xScale(i) + d.post_space * 5;
+        return xScale(i);
       })
       .y1(function (d, i) {
-        return yScale(d.std_time_spent) + 20 * j;
+        return yScale(d) + 20 * j;
       })
       .y0(function (d, i) {
-        return -yScale(d.std_time_spent) + 20 * j;
+        return -yScale(d) + 20 * j;
       })
       .curve(d3.curveMonotoneX);
 
     return area
   }
 
-  d3.csv("vis_mw_fv_new.csv", function load_data(data) {
-    for (var i = 0; i < data.length; i++) {
-      words[i] = data[i].Word
-      time[i] = data[i].std_time_spent
-      space[i] = data[i].post_space
-    }
-    const data_arr = data
 
-    n = data.length;
+
 
 
     var innerSVG = svg.append("svg")
@@ -124,7 +136,7 @@ function make_viz(font,curve) {
         svg.append('path')
           .attr('class', 'area')
           .attr("id", "curve")
-          .datum(data_arr.slice(i, i + 30))
+          .datum(time.slice(i, i + 30))
           .attr('fill', 'lightsteelblue')
           .attr('opacity', 0.5)
           .attr('d', area);
@@ -144,10 +156,7 @@ function make_viz(font,curve) {
         .text(words[i]);
       //if i%10==0 append p
 
-    }
-
-
-  });
+    };
 
 
   /*svg.append("text")

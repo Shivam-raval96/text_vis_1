@@ -24,12 +24,14 @@
     curve:20,
     show: true
   };
-
+  make_viz(params.font,params.curve)
   gui.add(params, 'font').name('Font Size').min(1).max(10).step(0.5).onFinishChange(function(){
+    d3.select("svg").remove()
     make_viz(params.font,params.curve)
   })
 
   gui.add(params, 'curve').name('Curve Height').min(1).max(30).step(0.5).onFinishChange(function(){
+    d3.select("svg").remove()
     make_viz(params.font,params.curve)
   })
  gui.add(params, 'show').name('Text').listen().onChange(function(){
@@ -59,7 +61,7 @@ function make_viz(font,curve) {
 
   var margin = {top: 50, right: 50, bottom: 50, left: 50}
     , width = window.innerWidth-150 - margin.left - margin.right // Use the window's width
-    , height = window.innerHeight/2  - margin.top - margin.bottom; // Use the window's height
+    , height = window.innerHeight  - margin.top - margin.bottom; // Use the window's height
 
 // 10 words per line
   var xScale = d3.scaleLinear()

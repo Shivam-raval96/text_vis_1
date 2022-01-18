@@ -49,7 +49,7 @@
     make_viz(words,time,space,params.font,params.curve)
   })
 
-  gui.add(params, 'curve').name('Curve Height').min(1).max(30).step(0.5).onChange(function(){
+  gui.add(params, 'curve').name('Curve Height').min(0).max(20).step(0.25).onChange(function(){
     d3.select("svg").remove()
     make_viz(words,time,space,params.font,params.curve)
   })
@@ -90,7 +90,7 @@ function make_viz(words,time,space,font,curve) {
 // Y scale input between 0, 1 output in pxls
   var yScale = d3.scaleLinear()
     .domain([0, 0.3]) // input
-    .range([-10, 2*curve]); // output
+    .range([0, 2*curve]); // output
 
   var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)

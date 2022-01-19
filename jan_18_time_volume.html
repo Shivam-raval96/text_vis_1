@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Load d3.js -->
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
+  <script type="text/javascript" src="dat.gui.min.js"></script>
+  <style>
+    body {
+      overflow: scroll; /* Show scrollbars */
+    }
+
+  </style>
+  <title>Duration of Utterance Visualization</title>
+</head>
+<body>
+<script>
+
+  /*var words = []
+  var time = []
+  var space = []
+  var amplitude = []*/
+  var data_array = {
+    words:[],
+    time:[],
+    space:[],
+    amplitude:[]
+
+  }
+  var n = 0
+
+  d3.csv("vis_mw_fv_amp.csv", function load_data(data) {
+    for (var i = 0; i < data.length; i++) {
+      data_array.words[i] = data[i].Word
+      data_array.time[i] = data[i].std_time_spent
+      data_array.space[i] = data[i].post_space
+      data_array.amplitude[i] = data[i].amplitude
+    }
+  });
+
+
+  var gui = new dat.GUI({
+    height : 5 * 32 - 1
+  });
+
+  var params = {
+    font: 5,
+    curve: 20,
+    show: true,
+    visualize: "Time",
+    curve_color: "#b0c4de",
+    text_color: "#000000",
+    n_avg: 1,
+    zoomlvl: 1,
+    panx: 50,
+    pany: 50
+    //bold_value: 1
+  };
+
+param_default = params
+
+  gui.add(params, 'font').name('Font Size').min(1).max(10).step(0.5).onChange(function(){
+    d3.select("svg").remove()
+    params.zoomlvl = d3.select("#zoomlvl").text()
+    params.panx = d3.select("#panx").text()
+    params.pyan = d3.select("#pany").text()
+    make_viz(data_array,params)
+
+  })
+
+  gui.add(params, 'curve').name('Curve Height').min(0).max(30).step(0.25).onChange(function(){
+    d3.select("svg").remove()
+    params.zoomlvl = d3.select("#zoomlvl").text()
+    params.panx = d3.select("#panx").text()
+    params.pyan = d3.select("#pany").text()
+    make_viz(data_array,params)
+  })
+
+  gui.add(params, 'n_avg').name('Moving Average').min(1).max(20).step(1).onChange(function(){
+    d3.select("svg").remove()
+    params.zoomlvl = d3.select("#zoomlvl").text()
+    params.panx = d3.select("#panx").text()
+    params.pyan = d3.select("#pany").text()
+    make_viz(data_array,params)
+  })
+
+  /*gui.add(params, 'bold_value').name('Boldness').min(0.5).max(10).step(0.5).onChange(function(){
+    d3.select("svg").remove()
+    make_viz(data_array,params)
+  })*/
+ gui.add(params, 'show').name('Text').listen().onChange(function(){
+   // Determine if current line is visible
+   var active = textshow.active ? false : true,
+     newOpacity = active ? 0 : 1;
+   // Hide or show the elements
+   d3.selectAll("#textshow").style("opacity", newOpacity);
+   // Update whether or not the elements are active
+   textshow.active = active;
+ });
+
+  gui.add(params,'visualize', ['Time', 'Volume']).name('Visualize').onChange(
+    function(newValue) {
+      d3.select("svg").remove()
+      params.zoomlvl = d3.select("#zoomlvl").text()
+      params.panx = d3.select("#panx").text()
+      params.pyan = d3.select("#pany").text()
+      make_viz(data_array,params)
+    });
+
+    gui.addColor(params,'curve_color').name('Curve Color').onChange(function() {
+
+      d3.select("svg").remove()
+      params.zoomlvl = d3.select("#zoomlvl").text()
+      params.panx = d3.select("#panx").text()
+      params.pyan = d3.select("#pany").text()
+      make_viz(data_array,params)
+    });
+
+  gui.addColor(params,'text_color').name('Text Color').onChange(function() {
+    d3.select("svg").remove()
+    params.zoomlvl = d3.select("#zoomlvl").text()
+    params.panx = d3.select("#panx").text()
+    params.pyan = d3.select("#pany").text()
+    make_viz(data_array,params)
+  });
+
+ params.startAnimation =
+    function() {
+      make_viz(data_array,params)
+    };
+
+  gui.add(params,'startAnimation').name('StartVisual');
+
+  params.resetAnimation =
+    function() {
+    params = param_default
+    d3.select("svg").remove()
+      make_viz(data_array,params)
+    };
+
+  //gui.add(params,'resetAnimation').name('Reset');
+
+
+
+function make_viz(data_array,params) {
+  font = params.font;
+  curve = params.curve;
+  curvecolor = params.curve_color;
+  textcolor = params.text_color;
+  n_avg = params.n_avg
+  //boldval = params.bold_value
+  words = data_array.words;
+  time = data_array.time;
+  space = data_array.space;
+  amplitude = data_array.amplitude;
+  n = words.length;
+
+  if (params.visualize == "Time"){
+    quantity = time
+    //boldness = Array(n).fill(0.5);
+  }else if (params.visualize == "Volume"){
+    quantity = amplitude
+    //boldness = Array(n).fill(0.5);
+  }else{
+    quantity = amplitude
+    boldness = time;
+  }
+
+  /**
+   * returns an array with moving average of the input array
+   * -------moving average slider cuts off before the end: edges might not be accurate
+   * @param array - the input array
+   * @param count - the number of elements to include in the moving average calculation
+   */
+  function movingAvg(array, count) {
+
+    // calculate average for subarray
+    var avg = function (subarray) {
+
+      var sum = 0, num = 0, val;
+      for (let i = 0; i < subarray.length; i++) {
+        val = parseFloat(subarray[i]);
+        sum += val;
+        num++;
+      }
+      return sum / num;
+    };
+
+    var result = array.slice(0,count-1), val;
+
+    // calculate average for each subarray and add to result
+    for (let i = count-1; i < array.length; i++) {
+
+
+
+      val = avg(array.slice(i - Math.floor(count/2), i + Math.ceil(count/2)));
+      result.push(val);
+      //console.log( array.slice(i, i + count) )
+
+    }
+
+      return result;
+
+  }
+
+  //console.log(movingAvg([1,2,5,3,4,1], n_avg))
+
+  if (n_avg > 1){
+    quantity = movingAvg(quantity, n_avg)
+  }
+
+
+
+
+
+
+
+  var margin = {top: 50, right: 50, bottom: 50, left: 50}
+    , width = window.innerWidth-150 - margin.left - margin.right // Use the window's width
+    , height = window.innerHeight  - margin.top - margin.bottom; // Use the window's height
+
+// 10 words per line
+  var xScale = d3.scaleLinear()
+    .domain([0, 30]) // input
+    .range([0, width - 250]); // output
+
+// Y scale input between 0, 1 output in pxls
+  var yScale = d3.scaleLinear()
+    .domain([0, 0.3]) // input
+    .range([0, 2*curve]); // output
+
+
+  function onZoom() {
+    //params.panx = d3.event.transform.x
+    //params.pany = d3.event.transform.y
+    d3.select('#zoomlvl').text(d3.event.transform.k)
+    d3.select('#panx').text(d3.event.transform.x)
+    d3.select('#pany').text(d3.event.transform.y)
+    svg.attr("transform", d3.event.transform)
+  }
+
+  var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .call(d3.zoom().on("zoom", onZoom))
+    .append("g")
+    .attr("transform", "translate(" + params.panx + "," + params.pany + ")scale(" + params.zoomlvl + ")")
+
+  d3.select("body").append('div').append("text").attr('id','zoomlvl').style('opacity',0);
+  d3.select("body").append('div').append("text").attr('id','panx').style('opacity',0);
+  d3.select("body").append('div').append("text").attr('id','pany').style('opacity',0);
+
+
+
+
+  function makearea(j) {
+    var area = d3.area()
+      .x(function (d, i) {
+        return xScale(i);
+      })
+      .y1(function (d, i) {
+        return yScale(d) + 20 * j;
+      })
+      .y0(function (d, i) {
+        return -yScale(d) + 20 * j;
+      })
+      .curve(d3.curveMonotoneX);
+
+    return area
+  }
+
+
+
+
+
+    var innerSVG = svg.append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("overflow", "visible")
+      .append("g")
+
+
+
+    for (let i = 0; i < n; i++) {
+      if (i % 30 == 0) {
+        area = makearea(~~(i / 30))
+        //console.log(grp_data)
+        svg.append('path')
+          .attr('class', 'area')
+          .attr("id", "curve")
+          .datum(quantity.slice(i, i + 30))
+          .attr('fill', curvecolor)
+          .attr('opacity', 0.5)
+          .attr('d', area);
+
+      }
+    }
+
+    for (let i = 0; i < n; i++) {
+      innerSVG.attr("id", `textshow`)
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", (xScale(i) + space[i] * 5) % (width - 250))
+        .attr("y", 20 * ~~(i / 30))
+        .attr("font-size", font * quantity[i] + "em")
+        .attr("dy", .35 + "em")
+        .attr("vertical-align", "middle")
+        .attr("fill", textcolor)
+        //.attr("font-weight",boldness[i]*boldval*180)
+        .text(words[i]);
+      //if i%10==0 append p
+
+    };
+
+
+  /*svg.append("text")
+    .attr("id", `showbutton`)
+    .attr("text-anchor", "middle")
+    .attr("x", width - 200)
+    .attr("y", 100)
+    .attr("font-size", "2em")
+    .attr("dy", ".35em")
+    .attr("vertical-align", "middle")
+    .attr("paint-order", "stroke")
+    .attr("stroke", "#000000")
+    .attr("stroke-width", " 1px")
+    .text("Hide Text")
+    .on("click", function () {
+      // Determine if current line is visible
+      var active = textshow.active ? false : true,
+        newOpacity = active ? 0 : 1;
+      // Hide or show the elements
+      d3.select("#textshow").style("opacity", newOpacity);
+      // Update whether or not the elements are active
+      textshow.active = active;
+    })*/
+
+}
+/*
+function linspace(start, stop, num, endpoint = true) {
+  const div = endpoint ? (num - 1) : num;
+  const step = (stop - start) / div;
+  return Array.from({length: num}, (_, i) => start + step * i);
+}
+ */
+
+</script>
+
+</body>
+</html>
+

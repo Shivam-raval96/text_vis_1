@@ -12,18 +12,17 @@
     }
 
   </style>
-  <title> Visualization Demo</title>
+  <title> Speech Visualization Demo</title>
 </head>
 <body>
 <p style="font-size:14px;">
   Instructions:</br>
-  Press PlayAudio/PauseAudio to play/pause the audio segment and StartVisual to start rendering at default values. Pan and zoom to view the text as whole or at sentence scale.<br>
+  Press StartVisual to start rendering at default values. Pan and zoom to view the text as whole or at sentence scale.<br>
   Move the sliders to change the multiplier for background curve height or font size. Show/hide the text or the curve with appropriate checkbox.<br>
   Moving average slider computes the sliding average of the signal (default at 1)<br>
   Choose between visualizing text with time duration of utterance/length of word (Time) or the amplitude of the spoken word (Volume)<br>
-  Refresh browser to begin again.
+  Refresh browser to begin again. Press GetAudioFile to access the audio clip.
 </p>
-<audio id="audio" src="vis_1.wav"></audio>
 <script>
 
   /*var words = []
@@ -164,21 +163,12 @@ param_default = params
   gui.add(params,'startAnimation').name('StartVisual');
 
 
-  params.playAudio =
+  params.AudioFile =
     function() {
-      var audio = document.getElementById("audio");
-      audio.play();
+      window.open('https://drive.google.com/file/d/16hHsv2zyuTlAknQX-xpUxQ6d2DCtTbCg/view?usp=sharing');
     };
 
-  gui.add(params,'playAudio').name('PlayAudio');
-
-  params.pauseAudio =
-    function() {
-      var audio = document.getElementById("audio");
-      audio.pause();
-    };
-
-  gui.add(params,'pauseAudio').name('PauseAudio');
+  gui.add(params,'AudioFile').name('GetAudioFile');
 
   /*params.resetAnimation =
     function() {

@@ -25,7 +25,7 @@
   Move the sliders to change the multiplier for background curve height or font size. Show/hide the text or the curve with appropriate checkbox.<br>
   Moving average slider computes the sliding average of the signal (default at 1)<br>
   Choose between visualizing text with time duration of utterance/length of word (Time) or the amplitude of the spoken word (Volume)<br>
-  Refresh browser to begin again. Press GetAudioFile to access the audio clip.
+  Refresh browser to begin again.
 </p>
 <script>
 
@@ -63,7 +63,6 @@
     "csv/Ozy_john_g.csv",
     "csv/Ozy_r_attenb.csv",
     "csv/Ozy_tom.csv",
-    "csv/ozy_vince_price.csv",
     "csv/Ozy1.csv",
     "csv/ozy3.csv",
     "csv/ozy4.csv",
@@ -180,8 +179,8 @@ var data_array = [];
 
   params.startAnimation =
     function() {
+      clear_svg(data_array.length)
       make_viz_array(data_array)
-      //make_viz(data_array,params)
     };
 
   gui.add(params,'startAnimation').name('StartVisual');

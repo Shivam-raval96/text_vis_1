@@ -98,7 +98,7 @@ var data_array = [];
     curve_color: "#b0c4de",
     text_color: "#000000",
     n_avg: 1,
-    zoomlvl: 0.6,
+    zoomlvl: 0.7,
     panx: 50,
     pany: 50,
     subvizx: 6,
@@ -370,7 +370,7 @@ var data_array = [];
           .datum(quantity.slice(j, i))
           .attr('fill', curvecolor)
           .attr('opacity', opacity)
-          .attr('d', area);
+          .attr('d', area)
         j = i
         lineheight++
       }

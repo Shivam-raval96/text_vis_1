@@ -25,7 +25,7 @@
   Move the sliders to change the multiplier for background curve height or font size. Show/hide the text or the curve with appropriate checkbox.<br>
   Moving average slider computes the sliding average of the signal (default at 1)<br>
   Choose between visualizing text with time duration of utterance/length of word (Time) or the amplitude of the spoken word (Volume)<br>
-  Refresh browser to begin again.
+  Refresh browser or press StartVisual to begin again.
 </p>
 <script>
 
@@ -89,19 +89,19 @@ var data_array = [];
   });
 
   var params = {
-    font: 1.5,
-    curve: 2.5,
-    curveopacity:0.5,
+    font: 1.1,
+    curve: 2.6,
+    curveopacity:1,
     showtext: true,
     showcurve: true,
-    visualize: "Time",
+    visualize: "Volume",
     curve_color: "#b0c4de",
     text_color: "#000000",
     n_avg: 1,
-    zoomlvl: 1,
+    zoomlvl: 0.6,
     panx: 50,
     pany: 50,
-    subvizx: 3,
+    subvizx: 6,
     subvizy: 2,
     links: links,
     //bold_value: 1
@@ -116,7 +116,7 @@ var data_array = [];
   }
 
 
-  gui.add(params, 'font').name('Font Size').min(0.25).max(4).step(0.1).onChange(function(){
+  gui.add(params, 'font').name('Font Size').min(0.25).max(2.5).step(0.05).onChange(function(){
     clear_svg(data_array.length)
     make_viz_array(data_array)
 
@@ -218,7 +218,7 @@ var data_array = [];
     space = data_array.space;
     amplitude = data_array.amplitude;
     n = words.length;
-    const widthoffset = 50;
+    const widthoffset = 100;
     const num_words = 15;
     const linespacing = 30;
     const xscaleoffset = 300;
@@ -285,8 +285,8 @@ var data_array = [];
 
 
     var margin = {top: 50, right: 50, bottom: 50, left: 50}
-      , width = (window.innerWidth -widthoffset - margin.left - margin.right)/2.5 // Use the window's width
-      , height = (window.innerHeight - margin.top - margin.bottom)/1.8; // Use the window's height
+      , width = (window.innerWidth -widthoffset - margin.left - margin.right)/params.subvizx // Use the window's width
+      , height = (window.innerHeight - margin.top - margin.bottom)/params.subvizy; // Use the window's height
 
     svgwidth = width-widthoffset + margin.left + margin.right
     svgheight = height + margin.top + margin.bottom
@@ -295,6 +295,9 @@ var data_array = [];
     var xScale = d3.scaleLinear()
       .domain([0, num_words]) // input
       .range([0, width - widthoffset + xscaleoffset ]); // output
+    var xScale_area = d3.scaleLinear()
+      .domain([0, num_words]) // input
+      .range([-10, width - widthoffset + xscaleoffset + 10 ]); // output
 
 // Y scale input between 0, 1 output in pxls
     var yScale = d3.scaleLinear()
@@ -310,7 +313,7 @@ var data_array = [];
         svg.attr("transform", d3.event.transform)
       }))
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")scale("+params.zoomlvl+")");
     //console.log(params.panx, params.pany, params.zoomlvl)
 
 /*svg.append("a")
@@ -328,7 +331,7 @@ var data_array = [];
     function makearea(j) {
       var area = d3.area()
         .x(function (d, i) {
-          return xScale(i);
+          return xScale_area(i);
         })
         .y1(function (d, i) {
           return yScale(d) + linespacing * j;

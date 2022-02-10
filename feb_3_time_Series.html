@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <svg width="400" height="400"></svg>
+  <style>path {
+    fill: none;
+    stroke: black;
+    stroke-width: 1px;
+  }</style>
+</head>
+<body>
+<h1>Hello Plunker!</h1>
+<div id=container>
+</div>
+
+<script>var svg = d3.select("svg");
+
+var data = data = [
+  {
+    word :"this",
+    date: 1,
+    value: 10
+  },
+  {
+    word: "is",
+    date: 3,
+    value: 100
+  },
+  {
+    word: "insanse!",
+    date: 8,
+    value: 30
+  }
+
+];
+
+var timeParse = d3.timeParse("%Y-%m-%d");
+var timeFormat = d3.timeFormat("%B %Y");
+
+
+var y = d3.scaleLinear()
+  .domain([0,100])
+  .range([100,10]);
+
+var x = d3.scaleLinear()
+  .domain([0,10])
+  .range([10,300]);
+
+var line = d3.line()
+  .x(function(d) { return x(d.date); })
+  .y(function(d) { return y(d.value); })
+
+svg.append("path")
+  .datum(data)
+  .attr("d", line);
+
+label = ["this", "is", "insane!"]
+tick = [1,3,8]
+// Axis:
+var axisBottom = d3.axisBottom()
+  .scale(x)
+  .tickValues(tick)
+  .tickFormat(label);
+
+svg.append("g")
+  .attr("transform","translate(0,100)")
+  .call(axisBottom);
+
+
+
+svg.selectAll("text")
+  .attr("text-anchor","start")
+  .attr("transform","rotate(0)translate(0,-13)");
+</script>
+
+</body>
+</html>

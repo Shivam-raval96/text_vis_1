@@ -320,6 +320,19 @@
     };
   gui.add(params,'compareAnim').name('CompareVisual');
 
+  params.compareAll =
+    function() {
+      params.compare=true;
+      params.subvizx = 1
+      params.subvizy = 10
+      params.zoomlvl= 0.15,
+        params.font=13;params.curve = 25
+      if (params.norm){params.pmin=-25;params.pmax=25;
+      } else{params.pmin=60;params.pmax=300}
+      clear_svg(data_array.length)
+      make_viz_array(data_array,amp)
+    };
+  gui.add(params,'compareAll').name('CompareAll');
   /*params.AudioFile =
     function() {
       window.open('https://drive.google.com/file/d/16hHsv2zyuTlAknQX-xpUxQ6d2DCtTbCg/view?usp=sharing');

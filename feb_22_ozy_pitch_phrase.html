@@ -24,8 +24,8 @@
   Press StartVisual to start rendering at default values. Drag a curve to place it anywhere on the screen<br>
   Move the sliders to change the multiplier for background curve height or font size. Show/hide the text with appropriate checkbox.<br>
   Moving average slider computes the sliding average of the signal <br>
-  Enter max/min pitch value to change the colormap range. Green: Minimum value, Orange: Maximum value, Grey: no pitch detected.<br>
-  Check sub_avg_pitch to subtract avg pitch for each line. Max/Min colormap range -> [-50,50]Hz <br>
+  Enter max/min pitch value (in Hz) to change the colormap range. Green: Minimum value, Orange: Maximum value, Grey: no pitch detected.<br>
+  Check sub_avg_pitch to subtract avg pitch for each line. Max/Min colormap range -> [-25 , 25]Hz <br>
   Refresh browser or press StartVisual to begin again.<br>
   Pick any two visuals to compare as a single line. Press CompareVisual to show.
 </p>
@@ -309,7 +309,7 @@
     function() {
     params.compare=true;
     params.subvizx = 1
-      params.zoomlvl= 0.2,
+      params.zoomlvl= 0.15,
       params.font=12;params.curve = 15
       if (params.norm){params.pmin=-25;params.pmax=25;
       } else{params.pmin=60;params.pmax=300}

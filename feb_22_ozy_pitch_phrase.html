@@ -26,9 +26,10 @@
   Moving average slider computes the sliding average of the signal <br>
   Enter max/min pitch value (in Hz) to change the colormap range. Green: Minimum value, Orange: Maximum value, Grey: no pitch detected.<br>
   Check sub_avg_pitch to subtract avg pitch for each line. Max/Min colormap range -> [-25 , 25]Hz <br>
-  Refresh browser or press StartVisual to begin again.<br>
+  Refresh browser  to begin again.<br>
   Pick any two visuals to compare as a single line. Press CompareVisual to show.
 </p>
+<p></p>
 <script>
 
   /*var words = []
@@ -178,7 +179,7 @@
   var params = {
     num_words:15,
     font: 7.5,
-    curve: 5.5,
+    curve: 7,
     curveopacity:1,
     size1:1,
     size2:0.5,
@@ -215,7 +216,7 @@
   }
 
 
-  gui.add(params, 'font').name('Font Size').min(0.25).max(10).step(0.1).onChange(function(){
+  gui.add(params, 'font').name('Font Size').min(5).max(12).step(0.25).onChange(function(){
     clear_svg(data_array.length)
 
     make_viz_array(data_array,amp)
@@ -226,7 +227,7 @@
     make_viz_array(data_array,amp)
 
   })*/
-  gui.add(params, 'curve').name('Curve Height').min(0).max(8).step(0.1).onChange(function(){
+  gui.add(params, 'curve').name('Curve Height').min(5).max(15).step(0.1).onChange(function(){
     clear_svg(data_array.length)
     make_viz_array(data_array,amp)
   })
@@ -269,7 +270,7 @@
     if (params.norm){params.pmin=-50;params.pmax=50;
     } else{params.pmin=60;params.pmax=300}
     if (params.compare){params.font=10;params.curve = 20;
-    } else{params.font=6;params.curve = 4;}
+    } else{params.font=param_default.font;params.curve = param_default.curve;}
 
 
     clear_svg(data_array.length)
@@ -294,8 +295,7 @@
 
   params.startAnimation =
     function() {
-      params.compare=false;
-      params.font=6;params.curve = 4;
+      params = param_default
       clear_svg(data_array.length)
       make_viz_array(data_array,amp)
     };
@@ -309,8 +309,9 @@
     function() {
     params.compare=true;
     params.subvizx = 1
+      params.subvizy = 10
       params.zoomlvl= 0.15,
-      params.font=12;params.curve = 15
+      params.font=13;params.curve = 25
       if (params.norm){params.pmin=-25;params.pmax=25;
       } else{params.pmin=60;params.pmax=300}
       clear_svg(data_array.length)
@@ -363,7 +364,7 @@ function make_svg(){
     t = amp.t
     amplitude = amp.amp
     const widthoffset = 100;
-    const linespacing = 60;
+    const linespacing = 70;
     const xscaleoffset = 300;
 
     /**
@@ -415,7 +416,7 @@ function make_svg(){
 
     svgwidth = width + margin.left + margin.right
     svgheight = height + margin.top + margin.bottom
-
+if (params.compare){svgheight = 50}
     var xScale = d3.scaleLinear()
       .domain([0, t_words ]) // input
       .range([0, 6*(width - widthoffset + xscaleoffset)]); // output
@@ -428,13 +429,14 @@ function make_svg(){
       .domain([0, 0.3]) // input
       .range([0, 2 * curveval]); // output
 if (params.compare){
-  margin.left = -10*margin.left
+  margin.left = -110*margin.left
+  svgwidth = 10*svgwidth
 }else{margin.left = -4*margin.left}
 
     var svg = d3.select("body").append("svg")
       .attr("width", svgwidth)
       .attr("height", svgheight)
-      .attr("transform", "translate(" + margin.left  + "," + -margin.top + ")scale("+params.zoomlvl+")")
+      .attr("transform", "translate(" + margin.left  + "," + margin.top + ")scale("+params.zoomlvl+")")
       .call(d3.zoom().on("zoom", function () {
         svg.attr("transform", d3.event.transform)
       }))
@@ -448,10 +450,10 @@ if (params.compare){
           return xScale_area(d[0]);
         })
         .y1(function (d, i) {
-          return yScale(d[1]) + linespacing * j;
+          return -yScale(d[1]) + linespacing * j-10;
         })
         .y0(function (d, i) {
-          return -yScale(d[1]) + linespacing * j;
+          return  linespacing * j-10;
         })
         .curve(d3.curveMonotoneX);
 
@@ -507,7 +509,7 @@ if (params.compare){
         .attr("text-anchor", "middle")
         .attr("x", (xScale((word_loc[i]-word_loc[k]))))
         .attr("y", linespacing * lineheight)
-        .attr("font-size", font*data_array.amplitude[i]/3 + "em")
+        .attr("font-size", font/5 + "em")
         .attr("dy", .35 + "em")
         .attr("vertical-align", "middle")
         //.attr("fill", speaker_colors[data_array.speaker[i]])

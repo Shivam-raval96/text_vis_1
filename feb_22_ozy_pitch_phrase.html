@@ -55,6 +55,8 @@
         data_array.amplitude[i] = data[i].amplitude2
         data_array.timeloc[i] = data[i].time
       }
+      //console.log(data_array)
+
     })
 
     return data_array
@@ -95,6 +97,11 @@
 
 
   paths = [
+    "csv/ozymandias/Ozymandias - Percy Bysshe Shelley (GCSE Poetry)-(480p).csv",
+    "csv/ozymandias/Ozymandias - by Percy Bysshe Shelley (Read by Jack Donovan).csv",
+    "csv/ozymandias/Ozymandias by Percy Bysshe Shelley - Poetry Reading.csv",
+    "csv/ozymandias/The Ballad of Buster Scruggs - Ozymandias-(480p).csv",
+    "csv/ozymandias/Ozymandias.csv",
     "csv/ozymandias/Ozy_adam.csv",
     "csv/ozymandias/ozy_ben_k.csv",
     "csv/ozymandias/Ozy_bryan.csv",
@@ -110,6 +117,11 @@
   ]
 
   paths2 = [
+    "csv/ozymandias/Ozymandias - Percy Bysshe Shelley (GCSE Poetry)-(480p)_ae.csv",
+    "csv/ozymandias/Ozymandias - by Percy Bysshe Shelley (Read by Jack Donovan)_ae.csv",
+    "csv/ozymandias/Ozymandias by Percy Bysshe Shelley - Poetry Reading_ae.csv",
+    "csv/ozymandias/The Ballad of Buster Scruggs - Ozymandias-(480p)_ae.csv",
+    "csv/ozymandias/Ozymandias_ae.csv",
     "csv/ozymandias/Ozy_adam_ae.csv",
     "csv/ozymandias/ozy_ben_k_ae.csv",
     "csv/ozymandias/Ozy_bryan_ae.csv",
@@ -125,6 +137,11 @@
   ]
 
   paths3 = [
+    "csv/ozymandias/Ozymandias - Percy Bysshe Shelley (GCSE Poetry)-(480p)_p.csv",
+    "csv/ozymandias/Ozymandias - by Percy Bysshe Shelley (Read by Jack Donovan)_p.csv",
+    "csv/ozymandias/Ozymandias by Percy Bysshe Shelley - Poetry Reading_p.csv",
+    "csv/ozymandias/The Ballad of Buster Scruggs - Ozymandias-(480p)_p.csv",
+    "csv/ozymandias/Ozymandias_p.csv",
     "csv/ozymandias/Ozy_adam_p.csv",
     "csv/ozymandias/ozy_ben_k_p.csv",
     "csv/ozymandias/Ozy_bryan_p.csv",
@@ -140,7 +157,12 @@
   ]
 
 
-  links = ["https://drive.google.com/file/d/1Ehrg4jTlurAnAo8je9Y1D0ED6zBZJcCr/view?usp=sharing",
+  links = ["",
+    "",
+    "",
+    "",
+    "",
+    "https://drive.google.com/file/d/1Ehrg4jTlurAnAo8je9Y1D0ED6zBZJcCr/view?usp=sharing",
     "https://www.youtube.com/watch?v=krbX-9ugbI4", //benk
     "https://www.youtube.com/watch?v=T3dpghfRBHE", //bryanC
     "https://www.youtube.com/watch?v=HfBcLOrm_Gg",//darin hagre
@@ -315,12 +337,12 @@
       if (params.norm){params.pmin=-25;params.pmax=25;
       } else{params.pmin=60;params.pmax=300}
       clear_svg(data_array.length)
-      make_viz(data_array[params.c1-1],amp[params.c1-1],pit[params.c1-1],params,links[params.c1-1])
-      make_viz(data_array[params.c2-1],amp[params.c2-1],pit[params.c2-1],params,links[params.c2-1])
+      make_viz(data_array[params.c1-1],amp[params.c1-1],pit[params.c1-1],params,links[params.c1-1],params.c1)
+      make_viz(data_array[params.c2-1],amp[params.c2-1],pit[params.c2-1],params,links[params.c2-1],params.c2)
     };
   gui.add(params,'compareAnim').name('CompareVisual');
 
-  params.compareAll =
+  /*params.compareAll =
     function() {
       params.compare=true;
       params.subvizx = 1
@@ -332,7 +354,7 @@
       clear_svg(data_array.length)
       make_viz_array(data_array,amp)
     };
-  gui.add(params,'compareAll').name('CompareAll');
+  gui.add(params,'compareAll').name('CompareAll');*/
   /*params.AudioFile =
     function() {
       window.open('https://drive.google.com/file/d/16hHsv2zyuTlAknQX-xpUxQ6d2DCtTbCg/view?usp=sharing');
@@ -358,7 +380,7 @@ function make_svg(){
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")scale("+params.zoomlvl+")")
 }
 
-  function make_viz(data_array,amp,pit,params,link) {
+  function make_viz(data_array,amp,pit,params,link,id=0) {
     //console.log(data_array)
     curveval = params.curve
     font = params.font;
@@ -442,7 +464,7 @@ if (params.compare){svgheight = 50}
       .domain([0, 0.3]) // input
       .range([0, 2 * curveval]); // output
 if (params.compare){
-  margin.left = -110*margin.left
+  margin.left = -3*window.innerWidth
   svgwidth = 10*svgwidth
 }else{margin.left = -4*margin.left}
 
@@ -483,7 +505,7 @@ if (params.compare){
       .attr("overflow", "visible")
       .append("g")
 
-    const breakwords = ["beth", "fade", "there", "land", "stone", "sand", "frown", "command", "read", "things", "fed", "appear", "kings", "despair", "decay", "bare", "away"];
+    const breakwords = ["gland","red","bear","declare","frowned","beth", "fade", "there", "land", "stone", "sand", "frown", "command", "read", "things", "fed", "appear", "kings", "despair", "decay", "bare", "away"];
     const zip = (a, b) => a.map((k, i) => [k, b[i]]);
     data = zip(t,quantity)
     a = 0
@@ -646,15 +668,15 @@ if (params.compare){
             //
             //console.log(pltpit_y[z],opa)
           }
-        //console.log(pltarr)
-
+        //console.log(pltpit_y)
+          if (params.compare){lg = id}else{lg = i}
           innerSVG.append("linearGradient")
-            .attr("id", "line-gradient" + String(i))
+            .attr("id", "line-gradient" + String(lg))
             .attr("gradientUnits", "userSpaceOnUse")
             .attr("x1", xScale(0))
-            .attr("y1", yScale(0) + linespacing * lineheight)
-            .attr("x2", xScale_area(pltpit_x[pltpit_x.length-1]))
-            .attr("y2", yScale(0.5) + linespacing * lineheight)
+            .attr("y1", -yScale(0.5) + linespacing * j-10)
+            .attr("x2", xScale(pltpit_x[pltpit_x.length-1]))
+            .attr("y2",  -yScale(0)+ linespacing * j-10)
             .selectAll("stop")
             .data(data11)
             .enter().append("stop")
@@ -674,8 +696,8 @@ if (params.compare){
             .datum(pltarr)
             //.attr('fill', params.curve_color)
             .attr('opacity', params.curveopacity)
-            .attr('fill', "url(#line-gradient" + String(i) + ")")
-            .attr("stroke", "url(#line-gradient" + String(i) + ")")
+            .attr('fill', "url(#line-gradient" + String(lg) + ")")
+            .attr("stroke", "url(#line-gradient" + String(lg) + ")")
             //.attr('stroke','black')
             //.attr("stroke-width", 0.2)
             .attr('d', area);

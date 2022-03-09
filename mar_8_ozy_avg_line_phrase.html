@@ -1,0 +1,722 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Load d3.js -->
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
+  <script type="text/javascript" src="dat.gui.min.js"></script>
+  <style>
+    body {
+      overflow: scroll; /* Show scrollbars */
+    }
+
+  </style>
+  <title> Speech Visualization Demo</title>
+</head>
+<body>
+<p style="font-size:14px;">
+  Instructions:</br>
+  Press StartVisual to start rendering at default values.<br>
+  Move the sliders to change the multiplier for background curve height or font size. Show/hide the text with appropriate checkbox.<br>
+  Moving average slider computes the sliding average of the signal <br>
+  Binned_per_word checkbox switched between volume/pitch averaged per word or raw data.<br>
+  Pitch+volume checkbox switched between viewing both pitch and amplitude together or only pitch.<br>
+  Refresh browser  to begin again.<br>
+</p>
+<p></p>
+<script>
+
+  /*var words = []
+  var time = []
+  var space = []
+  var amplitude = []*/
+
+  function load_data(path) {
+    var data_array = {
+      words: [],
+      time: [],
+      space: [],
+      amplitude: [],
+      timeloc:[],
+      pitch:[]
+    }
+
+
+    d3.csv(path, function (data) {
+      for (var i = 0; i < data.length; i++) {
+        data_array.words[i] = data[i].Word
+        data_array.time[i] = data[i].std_time_spent
+        data_array.space[i] = data[i].post_space
+        data_array.amplitude[i] = data[i].amplitude
+        data_array.pitch[i] = data[i].pitch
+        data_array.timeloc[i] = data[i].time
+      }
+      //console.log(data_array)
+
+    })
+
+    return data_array
+  };
+
+  function load_amp(path2) {
+    var audio ={
+      t:[],
+      amp:[],
+      pit:[],
+    }
+
+    d3.csv(path2, function (data) {
+      for (var i = 0; i < data.length; i++) {
+        audio.t[i] = data[i].time
+        audio.amp[i] = data[i].amplitude
+        audio.pit[i] = data[i].pitch
+      }
+    })
+
+    return audio
+
+  }
+
+
+
+  paths = [
+    "csv/ozymandias/Ozymandias - Percy Bysshe Shelley (GCSE Poetry)-(480p)2.csv",
+    "csv/ozymandias/Ozymandias - by Percy Bysshe Shelley (Read by Jack Donovan)2.csv",
+    "csv/ozymandias/Ozymandias by Percy Bysshe Shelley - Poetry Reading2.csv",
+    "csv/ozymandias/The Ballad of Buster Scruggs - Ozymandias-(480p)2.csv",
+    "csv/ozymandias/Ozymandias2.csv",
+    "csv/ozymandias/Ozy_adam2.csv",
+    "csv/ozymandias/ozy_ben_k2.csv",
+    "csv/ozymandias/Ozy_bryan2.csv",
+    "csv/ozymandias/ozy_darin_h2.csv",
+    "csv/ozymandias/ozy_elanor_b2.csv",
+    "csv/ozymandias/Ozy_john_g2.csv",
+    "csv/ozymandias/Ozy_r_attenb2.csv",
+    "csv/ozymandias/Ozy_tom2.csv",
+    "csv/ozymandias/Ozy12.csv",
+    "csv/ozymandias/ozy32.csv",
+    "csv/ozymandias/ozy42.csv",
+    "csv/ozymandias/ozy52.csv",
+  ]
+
+  paths2 = [
+    "csv/ozymandias/Ozymandias - Percy Bysshe Shelley (GCSE Poetry)-(480p)_ap.csv",
+    "csv/ozymandias/Ozymandias - by Percy Bysshe Shelley (Read by Jack Donovan)_ap.csv",
+    "csv/ozymandias/Ozymandias by Percy Bysshe Shelley - Poetry Reading_ap.csv",
+    "csv/ozymandias/The Ballad of Buster Scruggs - Ozymandias-(480p)_ap.csv",
+    "csv/ozymandias/Ozymandias_ap.csv",
+    "csv/ozymandias/Ozy_adam_ap.csv",
+    "csv/ozymandias/ozy_ben_k_ap.csv",
+    "csv/ozymandias/Ozy_bryan_ap.csv",
+    "csv/ozymandias/ozy_darin_h_ap.csv",
+    "csv/ozymandias/ozy_elanor_b_ap.csv",
+    "csv/ozymandias/Ozy_john_g_ap.csv",
+    "csv/ozymandias/Ozy_r_attenb_ap.csv",
+    "csv/ozymandias/Ozy_tom_ap.csv",
+    "csv/ozymandias/Ozy1_ap.csv",
+    "csv/ozymandias/ozy3_ap.csv",
+    "csv/ozymandias/ozy4_ap.csv",
+    "csv/ozymandias/ozy5_ap.csv",
+  ]
+
+
+  links = ["",
+    "",
+    "",
+    "",
+    "",
+    "https://drive.google.com/file/d/1Ehrg4jTlurAnAo8je9Y1D0ED6zBZJcCr/view?usp=sharing",
+    "https://www.youtube.com/watch?v=krbX-9ugbI4", //benk
+    "https://www.youtube.com/watch?v=T3dpghfRBHE", //bryanC
+    "https://www.youtube.com/watch?v=HfBcLOrm_Gg",//darin hagre
+    "https://www.youtube.com/watch?v=7TgYh9prPqk", //elanor
+    "https://www.youtube.com/watch?v=gHsBcUD_7jw", //sir john gielgud
+    "https://www.youtube.com/watch?v=bv2nklTyq9Q", //richard a
+    "https://www.youtube.com/watch?v=LVTiES1pE2o", // tom o bedlam
+    "https://www.youtube.com/watch?v=bFgw_vhwRdA",// rob simpson 1 "https://www.youtube.com/watch?v=V1bbJT7bZVA" ozy2
+    "https://drive.google.com/file/d/1ExAJ51adBx6Owf0mC_c40BwoNLTegxlX/view?usp=sharing",//3
+    "https://www.youtube.com/watch?v=Tz8VG1zIEL8",// lance foster 4
+    "https://youtu.be/ezWk5wTr6sU",//mythbuster 5
+
+  ]
+
+  var data_array = [];
+  var audio = [];
+
+  for(i=0; i<paths.length; i++){
+    data_array[i] = load_data(paths[i])
+    audio[i] = load_amp(paths2[i])
+    //console.log(data_array[i])
+  }
+  //data_array = load_data(paths[3])
+
+  function make_viz_array(data_array){
+    for(i=0; i<data_array.length; i++){
+      make_viz(data_array[i],audio[i],params,links[i])
+
+    }
+  }
+
+  var gui = new dat.GUI({
+    height : 5 * 32 - 1
+  });
+
+  var params = {
+    num_words:15,
+    font: 7.5,
+    curve: 10,
+    curveopacity:0.3,
+    size1:1,
+    size2:0.5,
+    size3:0.3,
+    noisefloor:0.1,
+    showtext: true,
+    showcurve: true,
+    visualize: "Volume",
+    curve_color: "#1D928E",
+    text_color: "#000000",
+    n_avg: 3,
+    zoomlvl: 0.22,
+    panx: 50,
+    pany: 50,
+    subvizx: 2,
+    subvizy: 6,
+    links: links,
+    pmax:250,
+    pmin:60,
+    phrasespacing:0.3,
+    compare: false,
+    c1:1,
+    c2:2,
+    norm:false,
+    pltbinned:true,
+    pltamp:true,
+    avg:true,
+    abstr:false,
+
+    //bold_value: 1
+  };
+
+  param_default = params
+
+  function clear_svg(num){
+    for (i =0; i<num; i++){
+      d3.select("svg").remove()
+    }
+  }
+
+  options = [
+    'onlypitch',
+    'pitch+volume',
+  ]
+
+  gui.add(params, 'font').name('Font Size').min(5).max(12).step(0.25).onChange(function(){
+    clear_svg(data_array.length)
+
+    make_viz_array(data_array,audio)
+
+  })
+  /*gui.add(params, 'noisefloor').name('Noise amp').min(0.001).max(0.015).step(0.001).onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,amp)
+
+  })*/
+  gui.add(params, 'curve').name('Curve Height').min(5).max(25).step(0.1).onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  })
+
+
+ /* gui.add(params, 'n_avg').name('Moving Average').min(1).max(20).step(1).onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  })
+
+  gui.add(params, 'pmin').name('Pitch min val').onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  })
+
+  gui.add(params, 'pmax').name('Pitch max val').onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  })*/
+  gui.add(params, 'phrasespacing').name('Phrase space').onChange(function(){
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  })
+
+    gui.add(params, 'pltbinned').name('Binned per word').onChange(function() {
+      clear_svg(data_array.length)
+      make_viz_array(data_array,audio)
+
+    });
+
+  gui.add(params, 'pltamp').name('Pitch+volume').onChange(function() {
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+
+  });
+
+  /*gui.add(params, 'avg').name('Abs/Norm values').onChange(function() {
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+
+  });*/
+
+
+  /*gui.add(params, 'bold_value').name('Boldness').min(0.5).max(10).step(0.5).onChange(function(){
+    d3.select("svg").remove()
+    make_viz(data_array,params)
+  })*/
+  gui.add(params, 'showtext').name('Show/Hide Text').listen().onChange(function(){
+    // Determine if current line is visible
+    var active = textshow.active ? false : true,
+      newOpacity = active ? 0 : 1;
+    // Hide or show the elements
+    d3.selectAll("#textshow").style("opacity", newOpacity);
+    // Update whether or not the elements are active
+    textshow.active = active;
+  });
+
+  gui.add(params, 'abstr').name('Abstract View').onChange(function() {
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+
+  });
+
+
+  /*gui.add(params, 'norm').name('sub_avg_pitch').listen().onChange(function(){
+    if (params.norm){params.pmin=-50;params.pmax=50;
+    } else{params.pmin=60;params.pmax=300}
+    if (params.compare){params.font=10;params.curve = 20;
+    } else{params.font=param_default.font;params.curve = param_default.curve;}
+
+
+    clear_svg(data_array.length)
+    make_viz_array(data_array,audio)
+  });*/
+
+  /*gui.add(params, 'showcurve').name('Show/Hide Curve').listen().onChange(function(){
+    // Determine if current line is visible
+    var active = curveshow.active ? false : true,
+      newOpacity = active ? 0 : params.curveopacity;
+    // Hide or show the elements
+    d3.selectAll("#curveshow").style("opacity", newOpacity);
+    // Update whether or not the elements are active
+    curveshow.active = active;
+  });*/
+
+
+  /*gui.addColor(params,'curve_color').name('Curve Color').onChange(function() {
+    clear_svg(data_array.length)
+    make_viz_array(data_array,amp)
+  });*/
+
+  params.startAnimation =
+    function() {
+      params = param_default
+      clear_svg(data_array.length)
+      make_viz_array(data_array,audio)
+    };
+
+  gui.add(params,'startAnimation').name('StartVisual');
+
+  /*gui.add(params, 'c1').name('Compare viz 1')
+  gui.add(params, 'c2').name('Compare viz 2')
+
+  params.compareAnim =
+    function() {
+      params.compare=true;
+      params.subvizx = 1
+      params.subvizy = 10
+      params.zoomlvl= 0.15,
+        params.font=13;params.curve = 25
+      if (params.norm){params.pmin=-25;params.pmax=25;
+      } else{params.pmin=60;params.pmax=300}
+      clear_svg(data_array.length)
+      make_viz(data_array[params.c1-1],amp[params.c1-1],pit[params.c1-1],params,links[params.c1-1],params.c1)
+      make_viz(data_array[params.c2-1],amp[params.c2-1],pit[params.c2-1],params,links[params.c2-1],params.c2)
+    };
+  gui.add(params,'compareAnim').name('CompareVisual');*/
+
+  /*params.compareAll =
+    function() {
+      params.compare=true;
+      params.subvizx = 1
+      params.subvizy = 10
+      params.zoomlvl= 0.15,
+        params.font=13;params.curve = 25
+      if (params.norm){params.pmin=-25;params.pmax=25;
+      } else{params.pmin=60;params.pmax=300}
+      clear_svg(data_array.length)
+      make_viz_array(data_array,amp)
+    };
+  gui.add(params,'compareAll').name('CompareAll');*/
+  /*params.AudioFile =
+    function() {
+      window.open('https://drive.google.com/file/d/16hHsv2zyuTlAknQX-xpUxQ6d2DCtTbCg/view?usp=sharing');
+    };
+
+  gui.add(params,'AudioFile').name('GetAudioFile');*/
+
+  /*params.resetAnimation =
+    function() {
+      params = param_default
+      d3.select("svg").remove()
+      make_viz(data_array,params)
+    };*/
+
+  //gui.add(params,'resetAnimation').name('Reset');
+
+  function make_svg(){
+    var svg = d3.select("body").append("svg")
+      .attr("width", svgwidth)
+      .attr("height", svgheight)
+      //.call(zoom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")scale("+params.zoomlvl+")")
+  }
+
+  function make_viz(data_array,audio,params,link,id=0) {
+    //console.log(data_array)
+    curveval = params.curve
+    font = params.font;
+    curvecolor = params.curve_color;
+    textcolor = params.text_color;
+    opacity = params.curveopacity
+    n_avg = params.n_avg
+    //boldval = params.bold_value
+    //words = data_array.words;
+    //time = data_array.time;
+    //space = data_array.space;
+    //word_loc = data_array.timeloc
+    //amplitude = data_array.amplitude;
+    //n = words.length;
+    t_words = params.num_words
+    //console.log(data_array)
+    //t = amp.t
+    //amplitude = amp.amp
+    const widthoffset = 100;
+    const linespacing = 200;
+    const xscaleoffset = 300;
+
+    /**
+     * returns an array with moving average of the input array
+     * -------moving average slider cuts off before the end: edges might not be accurate
+     * @param array - the input array
+     * @param count - the number of elements to include in the moving average calculation
+     */
+    function movingAvg(array, count) {
+
+      // calculate average for subarray
+      var avg = function (subarray) {
+
+        var sum = 0, num = 0, val;
+        for (let i = 0; i < subarray.length; i++) {
+          val = parseFloat(subarray[i]);
+          sum += val;
+          num++;
+        }
+        return sum / num;
+      };
+
+      var result = array.slice(0,count-1), val;
+
+      // calculate average for each subarray and add to result
+      for (let i = count-1; i < array.length; i++) {
+
+
+
+        val = avg(array.slice(i - Math.floor(count/2), i + Math.ceil(count/2)));
+        result.push(val);
+        //console.log( array.slice(i, i + count) )
+
+      }
+
+      return result;
+
+    }
+
+    //console.log(movingAvg([1,2,5,3,4,1], n_avg))
+
+
+    quantity = movingAvg(audio.amp, n_avg)
+
+
+    var margin = {top: 50, right: 50, bottom: 50, left: 50}
+      , width = 0.75*(window.innerWidth -widthoffset - margin.left - margin.right)/params.subvizx // Use the window's width
+      , height = 2*(window.innerHeight - margin.top - margin.bottom)/params.subvizy; // Use the window's height
+
+    svgwidth = width + margin.left + margin.right
+    svgheight = height + margin.top + margin.bottom
+    if (params.compare){svgheight = 50}
+    var xScale = d3.scaleLinear()
+      .domain([0, t_words ]) // input
+      .range([0, 10*(width - widthoffset + xscaleoffset)]); // output
+    var xScale_area = d3.scaleLinear()
+      .domain([0, t_words]) // input
+      .range([0, 10*(width - widthoffset + xscaleoffset)]); // output
+
+// Y scale input between 0, 1 output in pxls
+    var yScale = d3.scaleLinear()
+      .domain([0, 0.3]) // input
+      .range([0, 2 * curveval]); // output
+
+    if (params.avg ==true){
+      num = 1
+      if (params.pltbinned==true){num = 2}
+      if (params.abstr ==true){num = 5}
+      var yScale2 = d3.scaleLinear()
+        .domain([-70, 70]) // input
+        .range([-10, num*6 * curveval]); // output
+    }else{
+      var yScale2 = d3.scaleLinear()
+        .domain([50, 350]) // input
+        .range([20, 10 * curveval]); // output
+    }
+
+    if (params.compare){
+      margin.left = -3*window.innerWidth
+      svgwidth = 10*svgwidth
+    }else{margin.left = -4*margin.left}
+
+    var svg = d3.select("body").append("svg")
+      .attr("width", svgwidth)
+      .attr("height", 1.8*svgheight)
+      .attr("transform", "translate(" + margin.left  + "," + margin.top + ")scale("+params.zoomlvl+")")
+      //.call(d3.zoom().on("zoom", function () {
+       // svg.attr("transform", d3.event.transform)
+      //}))
+      .attr("overflow", "visible")
+      .append("g");
+
+
+    function makearea(j,pltamp) {
+      mul = 1
+      if (pltamp== false){mul= 0}
+      var area = d3.area()
+        .defined(function(d) { return d[2]; })
+        .x(function (d, i) {
+          return xScale_area(d[0]);
+        })
+        .y1(function (d, i) {
+          return -yScale2(d[2]) +mul*yScale(d[1])/(3) + linespacing * j;
+        })
+        .y0(function (d, i) {
+          return  -yScale2(d[2]) -mul*yScale(d[1])/(3)+linespacing * j + (mul - 1)*5;
+        })
+        .curve(d3.curveMonotoneX);
+
+      return area
+    }
+
+
+
+
+
+    var innerSVG = svg.append("svg")
+      .attr("width", "100%")
+      .attr("height","100%")
+      .attr("overflow", "visible")
+      .append("g")
+
+    const breakwords = ["gland","red","bear","declare","frowned","beth", "fade", "there", "land", "stone", "sand", "frown", "command", "read", "things", "fed", "appear", "kings", "despair", "decay", "bare", "away"];
+    const zip = (a, b) => a.map((k, i) => [k, b[i]]);
+    const zip2 = (a, b,c) => a.map((k, i) => [k, b[i],c[i]]);
+    const getColumns = (arr, indices) => arr.map(row => indices.map(i => row[i]));
+    a = 0
+
+    lineheight = 0
+    k = 0
+    if (params.showbold){
+      boldvalue = duration.map(x => x * params.boldval*180*3)
+      boldvalue = boldvalue.map(x => x * (x<900)+900*(x>900))
+    }else{
+      boldvalue = params.boldval*180*3
+    }
+
+    n = data_array.words.length
+    for (let i = 0; i <n; i++) {
+
+      if ( (breakwords.includes(data_array.words[i-1])  || i == n )&& params.compare == false){
+        //console.log(word_loc[i]-word_loc[k])
+        k = i
+        lineheight++
+      }
+
+
+      //console.log(words[i],words[i].length)
+      svg.append("text")
+        .attr("id", `textshow`)
+        .attr("text-anchor", "middle")
+        .attr("x", (xScale((data_array.timeloc[i]-data_array.timeloc[k]))))
+        .attr("y", linespacing * lineheight)
+        .attr("font-size", font/3 + "em")
+        .attr("dy", .35 + "em")
+        .attr("vertical-align", "middle")
+        //.attr("fill", speaker_colors[data_array.speaker[i]])
+        //.attr("font-family", "Avenir Next")
+        //.attr("font-weight", boldvalue[i])
+        .attr("letter-spacing",  20*data_array.time[i]+"px")
+        .text(data_array.words[i]);
+    }
+    //data = zip(audio.t,audio.amp,audio.pitch)
+    lineheight = 0
+    k = 0
+    l = 0
+
+    if (params.pltbinned == true){
+    //console.log("hi")
+    data = zip2(data_array.timeloc,data_array.amplitude, data_array.pitch)
+    n=data_array.words.length
+    for (let i = 0; i <= n; i++) {
+      //console.log(data[t.length][0])
+      if (breakwords.includes(data_array.words[i - 1]) || i == n|| data_array.space[i-1]>params.phrasespacing) {
+        //console.log(k,i)
+        area = makearea(lineheight, params.pltamp)
+        dat = data.slice(k, i)
+        if (params.avg == true){
+          meanval = math.mean(getColumns(dat, [2]))
+        }else{meanval = 0}
+
+  // subtract avg
+        pltarr = [[data[k][0] - 0.1, data[k][1], data[k][2]]].concat(dat)
+        pltarr[pltarr.length] = [+data[i-1][0] + 0.1, data[i-1][1], data[i-1][2]]
+        pltarr = pltarr.map(function (value) {
+
+          if (value[2] ==''){
+            return [value[0] - data[l][0], value[1], value[2]];
+          }else{
+            return [value[0] - data[l][0], value[1], value[2] - meanval];
+          }
+        });
+        //console.log(pltarr)
+        //break
+
+        if (params.abstr == true){l = i, params.curveopacity = 0.3}else{params.curveopacity = 1}
+        innerSVG.append('path')
+          .attr('class', 'area')
+          .attr("id", "curveshow")
+          .datum(pltarr)
+          .attr('fill', params.curve_color)
+          .attr('opacity', params.curveopacity)
+          //.attr('fill', "url(#line-gradient" + String(lg) + ")")
+          //.attr("stroke", "url(#line-gradient" + String(lg) + ")")
+          //.attr('stroke','black')
+          //.attr("stroke-width", 0.2)
+          .attr('d', area);
+
+        k = i
+        if ((breakwords.includes(data_array.words[i-1])  || i == n)&&params.abstr==false){
+          lineheight++
+          l = i
+        }
+      }
+
+    }
+
+
+}else {
+      //time related
+      j = 0
+      m = 0
+      //console.log(data_array)
+      data = zip2(audio.t,audio.amp, audio.pit)
+
+      for (let i = 0; i <= n; i++) {
+
+
+        if (breakwords.includes(data_array.words[i - 1]) || i == n) {
+          l = audio.t.findIndex(element => element > parseFloat(data_array.timeloc[j]))
+          k = audio.t.findIndex(element => element > parseFloat(data_array.timeloc[i-1]));
+          o = audio.t.findIndex(element => element > parseFloat(data_array.timeloc[m]))
+
+          if (i-j <= 1){
+            continue
+          }
+          area = makearea(lineheight, params.pltamp)
+          dat = data.slice(l, k)
+
+          if (params.avg == true){
+            meanval = math.mean(getColumns(dat, [2]))
+          }else{meanval = 0}
+
+          pltarr = [[audio.t[l] - 0.1, data[l][1], data[l][2]]].concat(dat)
+          pltarr[pltarr.length] = [+data[k][0] + 0.1, data[k][1], data[k][2]]
+          pltarr = pltarr.map(function (value) {
+
+            if (value[2] ==''){
+              return [value[0] - audio.t[l], value[1], value[2]];
+            }else{
+              return [value[0] - audio.t[l], value[1], value[2] - meanval];
+            }
+          });
+          if (params.abstr == true){j = i, params.curveopacity = 0.3}else{params.curveopacity = 1}
+
+          innerSVG.append('path')
+            .attr('class', 'area')
+            .attr("id", "curveshow")
+            .datum(pltarr)
+            .attr('fill', params.curve_color)
+            .attr('opacity', params.curveopacity)
+            //.attr('fill', "url(#line-gradient" + String(lg) + ")")
+            //.attr("stroke", "url(#line-gradient" + String(lg) + ")")
+            //.attr('stroke','black')
+            //.attr("stroke-width", 0.2)
+            .attr('d', area);
+
+          m = i
+
+          if ((breakwords.includes(data_array.words[i-1])  || i == n)&&params.abstr==false){
+            lineheight++
+            j = i
+          }
+        }
+
+      }
+    }
+
+
+
+
+    if (params.compare==false) {
+      svg.append("a")
+        .attr("xlink:href", link)
+        .attr("target", "_blank")
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", xScale(2))
+        .attr("font-size", "3em")
+        .attr("dy", -1.5 + "em")
+        .attr("vertical-align", "middle")
+        .attr("fill", 'darkred')
+        .text("")
+    }
+
+
+  }
+  /*
+  function linspace(start, stop, num, endpoint = true) {
+    const div = endpoint ? (num - 1) : num;
+    const step = (stop - start) / div;
+    return Array.from({length: num}, (_, i) => start + step * i);
+  }
+   */
+
+</script>
+
+
+<script>
+  function compare(data_array1,data_array2) {
+
+  }
+</script>
+</body>
+</html>
+

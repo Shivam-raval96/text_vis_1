@@ -1,0 +1,730 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Load d3.js -->
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
+  <script type="text/javascript" src="dat.gui.min.js"></script>
+  <script src="https://unpkg.com/mathjs@10.1.0/lib/browser/math.js"></script>
+  <style>
+    body {
+      overflow: scroll; /* Show scrollbars */
+    }
+
+  </style>
+  <title> Speech Visualization Demo</title>
+</head>
+<body>
+<p style="font-size:14px;">
+<h2>Instructions:</h2>
+  Seconds per line: Each line visualises the specific length of audio in seconds (default 5s)<br>
+  Press Add/remove Viz under Choose Viz to add or remove a visual. Select a visual before adding a new one.<br>
+  Show Volume: Show the volume plot as line thickness<br>
+  Move the sliders to change the multiplier for background curve height or font size. Show/hide the text or the curve with appropriate checkbox.<br>
+  Moving average slider computes the sliding average of the signal, both volume and pitch (default at 1)<br>
+  Show Volume: Show the volume plot as line thickness<br>
+  Show Pitch: Show the pitch value plotted. Imputed with an overall mean value wherever undetected<br>
+  Norm Volume: Toggle Normalizing the volume on/off (Min/Max scaling)<br>
+  Noise Cutoff: Noisefloor value. The volume curve values below this value are flattened to 0. Hide Nose: checkbox to toggle hiding the noise<br>
+  Sub Mean Pitch: Subtract the mean pitch value (PER LINE) and plot on a zoomed in range to view pitch changes per line.<br>
+  Phrase View: New line at every long pause. Postspace cutoff controls the cutoff pause time (seconds)<br>
+    Refresh browser or press ResetVisual to begin again.
+</p>
+<script>
+
+  /*var words = []
+  var time = []
+  var space = []
+  var amplitude = []*/
+
+
+  function load_audio(path2) {
+    var amp ={
+      t:[],
+      amp:[],
+      pit:[],
+    }
+
+    d3.csv(path2, function (data) {
+      for (var i = 0; i < data.length; i++) {
+        amp.t[i] = data[i].time
+        amp.amp[i] = data[i].amplitude
+        amp.pit[i] = data[i].pitch
+      }
+    })
+
+    return amp
+
+  }
+
+  function load_data(path) {
+    var data_array = {
+      words: [],
+      //time: [],
+      duration:[],
+      space:[],
+      timeloc:[],
+      pitch:[],
+      amplitude:[],
+      start:[],
+      end:[],
+
+    }
+
+
+    d3.csv(path, function (data) {
+      for (var i = 0; i < data.length; i++) {
+        data_array.words[i] = data[i].Word
+        //data_array.time[i] = data[i].time
+        data_array.duration[i] = data[i].std_time_spent
+        data_array.space[i] = data[i].post_pause
+        data_array.timeloc[i] = data[i].time
+        data_array.pitch[i] = data[i].pitch
+        data_array.amplitude[i] = data[i].amplitude
+        data_array.start[i] = data[i].Start
+        data_array.end[i] = data[i].End
+      }
+    })
+    return data_array
+  };
+
+
+
+  paths = [
+    "csv/kennedy_nixon_debate_part3.csv",
+    "csv/kennedy_rice3.csv",
+    "csv/nixon_vietnam_19693.csv",
+    "csv/news_fox3.csv",
+    "csv/news_lester_holt3.csv",
+    "csv/news_cnn_debate3.csv",
+    "csv/news_nbc_20003.csv",
+    //"csv/news_nbc_19902.csv",
+    "csv/news_nbc_19803.csv",
+    "csv/news_nbc_19703.csv",
+    "csv/news_nbc_19603.csv",
+    "csv/finale_talk_20173.csv",
+    "csv/finale_talk_20213.csv",
+    "csv/martin_hbs3.csv",
+    "csv/fernanda_hbs3.csv",
+    "csv/viz_talk_20103.csv",
+    "csv/talk_fv_mw3.csv",
+    //"csv/Blitzstein_Stat_110.csv",
+    //"csv/shia.csv",
+    //"csv/debate_nationals_2019.csv"
+  ]
+
+  names = [
+    'Pres debate: JFK vs Nixon',
+    'Speech sample: JFK',
+    'Speech sample: Nixon',
+    'News sample: Fox 2021',
+    'News sample: NBC 2021',
+    "News sample: CNN debate 2021",
+    "News sample: NBC 2000s",
+    //"News sample: NBC 1990s",
+    "News sample: NBC 1980s",
+    "News sample: NBC 1970s",
+    "News sample: NBC 1960s",
+    "Finale TED Talk 2017",
+    "Finale Zoom Talk 2021",
+    "Martin HBS Interview",
+    "Fernanda HBS Interview",
+    "Viz Talk: 2010",
+    "Viz Talk: 2020",
+    //"Blitzstein Stat 110",
+    //"ShiaLaBeouf the Musical",
+    //"Debate Nationals 2019"
+  ]
+  links=[]
+
+  var data_array = [];
+  for(i=0; i<paths.length; i++){
+    data_array[i] = load_data(paths[i])
+    //console.log(data_array[i])
+  }
+
+
+  paths2 = [
+    "csv/kennedy_nixon_debate_part_ap2.csv",
+    "csv/kennedy_rice_ap2.csv",
+    "csv/nixon_vietnam_1969_ap2.csv",
+    "csv/news_fox_ap2.csv",
+    "csv/news_lester_holt_ap2.csv",
+    "csv/news_cnn_debate_ap2.csv",
+    "csv/news_nbc_2000_ap2.csv",
+    //"csv/news_nbc_1990.csv",
+    "csv/news_nbc_1980_ap2.csv",
+    "csv/news_nbc_1970_ap2.csv",
+    "csv/news_nbc_1960_ap2.csv",
+    "csv/finale_talk_2017_ap2.csv",
+    "csv/finale_talk_2021_ap2.csv",
+    "csv/martin_hbs_ap2.csv",
+    "csv/fernanda_hbs_ap2.csv",
+    "csv/viz_talk_2010_ap2.csv",
+    "csv/talk_fv_mw_ap2.csv",
+    //"csv/Blitzstein_Stat_110_ap.csv",
+    //"csv/shia_ap.csv",
+    // "csv/debate_nationals_2019_ap.csv"
+  ]
+  links = [
+    "https://www.youtube.com/watch?v=AYP8-oxq8ig#t=22m0s", // kennedy nixon
+    "https://www.youtube.com/watch?v=WZyRbnpGyzQ",//kennedy
+    "https://www.youtube.com/watch?v=RPpOBu2LNCo",//nixon
+    "https://www.youtube.com/watch?v=qkGxyfpex8A", // fox news
+    "https://www.youtube.com/watch?v=eCQRhd-_4bw",// nbc lester holt
+    "https://www.youtube.com/watch?v=r1uMiKo9ebc",//cnn debate
+    "https://www.youtube.com/watch?v=aeJ9KPZLvJE", //2000s news
+    //"https://www.youtube.com/watch?v=KLlHcLTFwnM#t=8m07s",//1990 news
+    "https://www.youtube.com/watch?v=g_uEiwCElq0#t=4m06s",//1980 news
+    "https://www.youtube.com/watch?v=ksFhXFuRblg#t=1m26s",//1970 news
+    "https://www.youtube.com/watch?v=OEBg2Ma0hU4",//1960 news
+    "https://www.youtube.com/watch?v=4lIr8rgo5zE#t=0m12s", //finale ted talk 2017
+    "https://www.youtube.com/watch?v=LU9ejIgpWL0", //finale zoom talk
+    "https://www.youtube.com/watch?v=O_JAZNbj8Pg&t=180s",//martin hbs
+    "https://www.youtube.com/watch?v=u5JV88yPoGc&t=81s", //fernanda hbs
+    "https://www.youtube.com/watch?v=zeVODwQAYT8#t=0m48s",//viz talk 2010
+    "https://www.youtube.com/watch?v=jvhxHYKzfa8&t=35m0s",//rstudio talk
+    "https://www.youtube.com/watch?v=fDcjhAKuhqQ&t=170s", // blitz stat 110
+    "https://www.youtube.com/watch?v=o0u4M6vppCI",//shia,
+    "https://www.youtube.com/watch?v=Dw6Nvv8UMbU#t=0m37s"//debate 2019
+  ]
+
+  var amp = [];
+  for(i=0; i<paths.length; i++){
+    amp[i] = load_audio(paths2[i])
+    //console.log(data_array[i])
+  }
+
+
+
+  function make_viz_array(data_array,amp,pit){
+    for (i=0; i<num;i++){
+      id = names.indexOf(params['name'+i])
+      make_viz(data_array[id],amp[id],params)
+    }
+
+  }
+
+  var gui = new dat.GUI({
+    height : 5 * 32 - 1
+  });
+
+  var params = {
+    font: 14,
+    curve: 25.5,
+    ampcurve:2,
+    curveopacity:1,
+    showtext: true,
+    showcurve: true,
+    visualize: "Both",
+    curve_color: "#b0c4de",
+    text_color: "#000000",
+    n_avg: 1,
+    zoomlvl: 0.5,
+    panx: 50,
+    pany: 50,
+    showbold: false,
+    boldval: 8,
+    phrasespacing: 0.3,
+    subvizx: 0,
+    subvizy: 1,
+    links: links,
+    num_files:0,
+    num_words: 5,
+    audio: " ",
+    noisefloor:0.1,
+    noise:false,
+    norm:false,
+    ofs:false,
+    showvol:true,
+    showpit:true,
+    pltbinned:true,
+    pltphrase:false,
+    //bold_value: 1
+  };
+
+  param_default = params
+  //reading in all data, not loading on change
+  function clear_svg(num){
+    for (i =0; i<num; i++){
+      d3.select("svg").remove()
+    }
+  }
+
+  var num = 0
+  var items = [];
+  var item_links = [];
+
+  /*
+  gui.add(params,'name1', names).name('Name1').onChange(
+    function () {
+      clear_svg(3)
+      make_viz_array(data_array)
+    });
+  params.AudioFile =
+    function() {
+      window.open(links[id]);
+    };
+
+  gui.add(params,'name2', names).name('Name2').onChange(
+    function () {
+      clear_svg(3)
+      make_viz_array(data_array)
+    });
+  params.AudioFile =
+    function() {
+      window.open(links[id]);
+    };
+
+  gui.add(params,'name3', names).name('Name3').onChange(
+    function () {
+      clear_svg(3)
+      make_viz_array(data_array)
+    });
+  params.AudioFile =
+    function() {
+      window.open(links[id]);
+    };*/
+
+  parm = gui.addFolder('Parameters')
+  gui.add(params, 'num_words').name('Seconds per line').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array, amp)
+
+  })
+  gui.add(params, 'font').name('Font Size').min(0.25).max(15).step(0.05).onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+
+  })
+  gui.add(params, 'ampcurve').name('Amp Height').min(0).max(7).step(0.5).onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+
+
+  gui.add(params, 'curve').name('Pitch Height').min(0).max(50).step(0.5).onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+
+
+  gui.add(params, 'n_avg').name('Moving Average').min(1).max(8).step(1).onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+  gui.add(params, 'showvol').name('Show Volume').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+  gui.add(params, 'showpit').name('Show Pitch').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+  gui.add(params, 'norm').name('Norm Volume').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+
+  })
+
+  gui.add(params, 'noisefloor').name('Noise Cutoff').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+  gui.add(params, 'noise').name('Hide Noise').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+
+  gui.add(params, 'ofs').name('Sub Mean Pitch').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+
+  gui.add(params, 'pltphrase').name('Phrase View').listen().onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  });
+  gui.add(params, 'phrasespacing').name('Postspace cutoff').onChange(function(){
+    clear_svg(num+1)
+    make_viz_array(data_array,amp)
+  })
+
+
+
+  gui.add(params, 'showtext').name('Show/Hide Text').listen().onChange(function(){
+    // Determine if current line is visible
+    var active = textshow.active ? false : true,
+      newOpacity = active ? 0 : 1;
+    // Hide or show the elements
+    d3.selectAll("#textshow").style("opacity", newOpacity);
+    // Update whether or not the elements are active
+    textshow.active = active;
+  });
+
+  gui.add(params, 'showcurve').name('Show/Hide Curve').listen().onChange(function(){
+    // Determine if current line is visible
+    var active = curveshow.active ? false : true,
+      newOpacity = active ? 0 : params.curveopacity;
+    // Hide or show the elements
+    d3.selectAll("#curveshow").style("opacity", newOpacity);
+    // Update whether or not the elements are active
+    curveshow.active = active;
+  });
+
+
+
+
+  params.resetAnimation =
+    function() {
+      clear_svg(num+1)
+      make_viz_array(data_array,amp)
+    };
+
+  gui.add(params,'resetAnimation').name('Reset Viz');
+
+  file = gui.addFolder('Choose Viz')
+
+  var obj = {
+
+    add:function(){
+      idx = String(num)
+      eval('params.name' + idx + '= []')
+      item = gui.add(params, 'name'+idx,names).name('Name '+idx).onChange(function() {
+        clear_svg(num+1)
+        make_viz_array(data_array,amp)});
+
+
+      items.push(item)
+      num +=1;
+      params.subvizx +=1;
+    },
+
+    remove:function(){
+      gui.remove(items.pop())
+      delete params['name'+num]
+      clear_svg(num+1)
+      num = num -1
+      params.subvizx -=1
+      make_viz_array(data_array,amp);}
+
+  };
+
+  gui.add(params, 'audio',names).name("Video Link").onChange(function() {
+    window.open(links[names.indexOf(params['audio'])]);
+  });
+
+
+
+  gui.add(obj,'add').name('Add Viz');
+  gui.add(obj,'remove').name('Remove Viz');
+
+
+
+  function make_viz(data_array,amp, params) {
+
+    font = params.font;
+    curveval = params.curve;
+    curvecolor = params.curve_color;
+    textcolor = params.text_color;
+    opacity = params.curveopacity
+    n_avg = params.n_avg
+    boldval = params.bold_value
+    words = data_array.words;
+    word_loc = data_array.timeloc
+    duration = data_array.duration
+    n = words.length;
+    t_words = params.num_words
+    t = amp.t
+    amplitude = amp.amp
+    pitch = amp.pit
+    space = data_array.space
+    //console.log(space[1])
+    const widthoffset = 100;
+
+    const linespacing = 120;
+    const xscaleoffset = 100;
+    var boldness = new Array(n).fill(1)
+
+    /**
+     * returns an array with moving average of the input array
+     * -------moving average slider cuts off before the end: edges might not be accurate
+     * @param array - the input array
+     * @param count - the number of elements to include in the moving average calculation
+     */
+    function movingAvg(array, count, mean) {
+
+      // calculate average for subarray
+      var avg = function (subarray,mean) {
+
+        var sum = 0, num = 0, val;
+        for (let i = 0; i < subarray.length; i++) {
+          if (subarray[i]==""){subarray[i] = mean}
+          val = parseFloat(subarray[i]);
+          sum += val;
+
+          num++;
+        }
+        return sum / num;
+      };
+
+      var result = array.slice(0, count - 1), val;
+
+      // calculate average for each subarray and add to result
+      for (let i = count - 1; i < array.length; i++) {
+
+
+        val = avg(array.slice(i - Math.floor(count / 2), i + Math.ceil(count / 2)),mean);
+
+        result.push(val);
+        //console.log( array.slice(i, i + count) )
+
+      }
+
+      return result;
+
+    }
+
+    function norm(array){
+      max = math.max(array)
+      min = math.min(array)
+      new_array = array.map(function (value) {return (value-min)/(max-min);})
+
+      return new_array
+
+    }
+
+    //console.log(movingAvg([1,2,5,3,4,1], n_avg))
+    function notnan(x) {
+      return x !="";
+    }
+
+    function notnoise(array,noiseval) {
+       newarray = array.map(function (value){if (value>noiseval){return value}else{return 0}})
+      return newarray
+    }
+
+    meanpit = math.mean((amp.pit).filter(notnan))
+    meanamp = math.mean((amp.amp).filter(notnan))
+
+    if (params.n_avg>1){
+      amplitude = movingAvg(amp.amp, n_avg, meanamp)
+      pitch = movingAvg(amp.pit, n_avg, meanpit)
+    }else{amplitude = amp.amp; pitch = amp.pit}
+
+    if (params.norm == true){
+      amplitude = norm(amplitude)
+      params.ampcurve = 1
+    }
+
+    if (params.noise==true){
+      amplitude = notnoise(amplitude,params.noisefloor)
+    }
+
+
+    var margin = {top: 50, right: 5, bottom: 50, left: 5}
+      , width = (window.innerWidth - widthoffset - margin.left - margin.right) / params.subvizx // Use the window's width
+      , height = (window.innerHeight - margin.top - margin.bottom) / params.subvizy; // Use the window's height
+
+    svgwidth = width - widthoffset + margin.left + margin.right
+    svgheight = height + margin.top + margin.bottom
+
+    var xScale = d3.scaleLinear()
+      .domain([0, t_words ]) // input
+      .range([0, 1.2*width  + xscaleoffset]); // output
+    var xScale_area = d3.scaleLinear()
+      .domain([0, t_words]) // input
+      .range([0, 1.2*width + xscaleoffset]); // output
+
+// Y scale input between 0, 1 output in pxls
+    var yScale = d3.scaleLinear()
+      .domain([0, 1]) // input
+      .range([0, params.ampcurve * curveval]); // output
+
+topval = -55*margin.top
+    leftval = -30*margin.left
+    var svg = d3.select("body").append("svg")
+      .attr("width", svgwidth)
+      .attr("height", 10*svgheight)
+        .attr("transform", "translate(" + leftval + "," + topval + ")scale(" + params.zoomlvl + ")")
+      .attr("overflow", "visible")
+      //.call(d3.zoom().on("zoom", function () {
+      //  svg.attr("transform", d3.event.transform)
+     // }))
+      .append("g");
+
+    ////////// Interactivity
+
+
+if (params.ofs==true){domval = [-40,40]}else{domval = [80,300]}
+    var yScale2 = d3.scaleLinear()
+      .domain(domval) // input
+      .range([0, 2 * curveval]);
+
+    function makearea(j) {
+      var area = d3.area()
+        .x(function (d, i) {
+          return xScale_area(d[0]);
+        })
+        .y1(function (d, i) {
+          return -yScale2(d[2])  + linespacing * j;
+        })
+        .y0(function (d, i) {
+          return -yScale(d[1]) + linespacing * j;
+        })
+        .curve(d3.curveMonotoneX);
+
+      return area
+    }
+
+    function makearea2(j, showvol,showpit) {
+      var area = d3.area()
+        //.defined(function(d) { return d[1]; })
+        .x(function (d, i) {
+          return xScale_area(d[0]);
+        })
+        .y1(function (d, i) {
+          return  +yScale(d[2])*showvol-yScale2(d[1])*showpit + linespacing * j-20;
+        })
+        .y0(function (d, i) {
+          return  -yScale(d[2])*showvol-yScale2(d[1])*showpit+linespacing * j-20  + 5*(showvol==false)*(showpit==true);
+        })
+        .curve(d3.curveMonotoneX);
+
+      return area
+    }
+
+
+    var innerSVG = svg.append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("overflow", "visible")
+      .append("g")
+
+    var myColor = d3.scaleLinear().domain([ 100, 150, 180, 200, 220, 250, 300])
+      .range(['#134d8e', '#574b7a', '#784767', '#924253', '#a83c40', '#bd332b', '#d02410']
+
+      )
+//['#aa4761', '#9f6775', '#8e838a', '#739c9f', '#3eb5b5'])
+
+    const zip = (a, b) => a.map((k, i) => [k, b[i]]);
+    const zip2 = (a, b,c) => a.map((k, i) => [k, b[i],c[i]]);
+
+
+    var lineheight = 0
+    var j = 0
+    var k = 0
+    var p =0
+    var q =0
+    var l =0
+    var m = 0
+    const getColumns = (arr, indices) => arr.map(row => indices.map(i => row[i]));
+
+
+    //console.log(meanpit)
+//console.log(data_array)
+    if (params.pltbinned==true){
+
+      data = zip2(amp.t,pitch,amplitude)
+
+      for (let i = 0; i < n; i++) {
+
+        if (data_array.timeloc[i] - data_array.timeloc[j] > t_words || i == n  || (data_array.space[i-1]>params.phrasespacing)*params.pltphrase) {
+          area = makearea2(lineheight,params.showvol,params.showpit)
+          q = amp.t.findIndex(element => element > parseFloat(data_array.start[j]))
+          p = amp.t.findIndex(element => element > parseFloat(data_array.end[i-1]));
+          k = data_array.start[j]
+          l = data_array.end[i-1]
+
+          arr_filtered = getColumns(data.slice((q, p)), [1]).filter(notnan)
+          if (arr_filtered.length!=0){meanval = math.mean(arr_filtered)}else{meanval = meanpit}
+            pltarr = [[k - 0.1, data[q][1],data[q][2]]].concat(data.slice(q, p))
+            pltarr[p-q + 1] = [+l + 0.1, data[p-1][1],data[p-1][2]]
+            pltarr = pltarr.map(function (value) {
+              if (value[1]==''){
+                value[1] = meanval
+              }
+              return [value[0] - k, value[1],value[2]];
+            });
+
+          if (params.ofs == true){pltarr = pltarr.map(function (value) {return [value[0], value[1]-meanval,value[2]]});}
+
+          clr = myColor(meanval)
+          //console.log(clr,lineheight, meanval, pltarr)
+            innerSVG.append('path')
+              .attr('class', 'area')
+              .attr("id", "curveshow")
+              .datum(pltarr)
+              //.attr('fill', '#B0C4DE')
+              .attr('opacity', 1)
+              .attr('fill', clr)
+              //.attr("stroke", "url(#line-gradient"+String(i)+")" )
+              .attr('stroke', 'black')
+              .attr("stroke-width", 0.2)
+              .attr('d', area);
+
+
+            //if (data_array.timeloc[i] - data_array.timeloc[j] > t_words || i == n || data_array.space[i-1]>params.phrasespacing){}
+            lineheight++
+            j = i
+
+          //console.log(amp.t[q],amp.t[p])
+
+
+            }
+          //if (params.pltphrase==true){lineheight++}
+
+
+
+      }
+
+    } else {}
+    //console.log(duration)
+
+    lineheight = 0
+    k = 0
+    j=0
+    if (params.showbold){
+      boldvalue = duration.map(x => x * params.boldval*180*3)
+      boldvalue = boldvalue.map(x => x * (x<900)+900*(x>900))
+    }else{
+      boldvalue = params.boldval*180*3
+    }
+    for (let i = 0; i <n; i++) {
+      if ( data_array.timeloc[i] - data_array.timeloc[j] > t_words || i == n-1  || (data_array.space[i-1]>params.phrasespacing)*params.pltphrase){
+        j = i
+        lineheight++
+      }
+      //console.log(j,i-1)
+      //if (params.pltphrase==true||data_array.space[i]>params.phrasespacing){lineheight++; k = word_loc[i]}
+//console.log(word_loc[i] - word_loc[j], words[i] )
+      spc = xScale(+ data_array.end[i] -data_array.start[i])
+      svg.append("text")
+        .attr("id", `textshow`)
+        .attr("text-anchor", "middle")
+        .attr("x", (xScale(word_loc[i] - data_array.start[j] )))
+        .attr("y", linespacing * lineheight)
+        .attr("font-size", font/8+ "em")
+        .attr("dy", .35 + "em")
+        .attr("vertical-align", "middle")
+        //.attr("fill", speaker_colors[data_array.speaker[i]])
+        .attr("font-family", "Avenir Next")
+        .attr("font-weight", 500)
+        //.attr("letter-spacing",  duration[i]-0.2+"px")
+        .attr("letter-spacing",  10*duration[i]-0.2+"px")
+        .text(words[i]);
+    }
+
+
+  }
+
+</script>
+
+</body>
+</html>
+

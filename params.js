@@ -1,5 +1,5 @@
 var params = {
-  font: 8,
+  font: 12,
   curve: 100,
   ampcurve:15,
   curveopacity:1,

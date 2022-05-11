@@ -758,7 +758,7 @@ if(this.params.cmap ==true){
         var meanval, pltarr, clr, maxv, ymax, a, pltmean, pltstd
 
         if ( (data_array.timeloc[i] - data_array.timeloc[m] > t_words)*(!params.pltint*!params.pltphrase)|| i == n-1  || (data_array.space[i-1]>params.phrasespacing)|| (data_array.speed[i-1]<params.speed)*params.pltint) {
-          console.log(Date.now()-t)
+    
           area = this.makearea(lineheight+1,params.showvol,params.showpit)
           area_amp = this.makearea2(lineheight+1,4)
           q = amp.t.findIndex(element => element > parseFloat(data_array.start[j]))

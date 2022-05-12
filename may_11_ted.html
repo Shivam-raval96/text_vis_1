@@ -761,7 +761,7 @@
         if ( (data_array.timeloc[i] - data_array.timeloc[m] > t_words)*(!params.pltint*!params.pltphrase)|| i == n-1  || (data_array.space[i-1]>params.phrasespacing)|| (data_array.speed[i-1]<params.speed)*params.pltint) {
 
           area = this.makearea(lineheight+1,params.showvol,params.showpit)
-          area_amp = this.makearea2(lineheight+1,4+20)
+          area_amp = this.makearea2(lineheight+1,4+25)
           q = amp.t.findIndex(element => element > parseFloat(data_array.start[j]))
           p = amp.t.findIndex(element => element > parseFloat(data_array.end[i-1]));
           k = data_array.start[j]
@@ -867,7 +867,7 @@
             .attr('width', this.xScale(pltarr[p-q+1][0] - pltarr[0][0]) )
             //.attr('height', this.linespacing*meanamp*3)
             //.attr("pointer-events", "visibleStroke")
-            .attr('height', this.linespacing-4*w-20)
+            .attr('height', this.linespacing-4*w-25)
             //.attr("stroke-width", this.params.border*(meanamp*15)**3 )
             .attr('fill', "url(#line-gradient_"+ this.name+String(j)+")")
             .attr("stroke", "black" )
@@ -915,7 +915,7 @@
             .attr('y', (lineheight)*linespacing)
             .attr('width', this.xScale(data_array.space[i-1])-8*w)
             //.attr('height', this.linespacing*meanamp*3)
-            .attr('height', this.linespacing-4*w-20)
+            .attr('height', this.linespacing-4*w-25)
             .attr("stroke-width", 0.3)
             .attr('stroke', 'black')
             .attr('fill', 'white')
@@ -1010,7 +1010,7 @@
           .attr("id", `textshow`)
           .attr("text-anchor", "middle")
           .attr("x", (this.xScale(data_array.timeloc[i] - data_array.start[j] )))
-          .attr("y", (linespacing) * (lineheight+1)-20+5)
+          .attr("y", (linespacing) * (lineheight+1)-20+8)
           .attr("font-size", this.params.font/18+ "em")
           .attr("dy", .35 + "em")
           .attr("vertical-align", "middle")

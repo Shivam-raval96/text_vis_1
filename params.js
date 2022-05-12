@@ -36,7 +36,7 @@ var params = {
   abstr:false,
   zoomon:false,
   gradient:true,
-  height:1.5,
+  height:2.5,
   width:1,
   showstats:false,
   cmap:false

@@ -541,7 +541,7 @@ if (this.params.n_avg>1) {
           .on("input", function(d){return slided(d)});
 
         function zoomed() {
-          console.log(content.id,d3.select('#'+content.id), viz0.svg)
+          console.log(d3.event.transform)
           const currentTransform = d3.event.transform;
           d3.select('#'+content.id).attr("transform", 'scale('+currentTransform.k+')');
           slider.property("value", currentTransform.k);

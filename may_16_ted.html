@@ -810,7 +810,7 @@ if (this.params.n_avg>1) {
         if ( (+data_array.end[i] - data_array.start[m] >=t_words)*(!params.pltint*!params.pltphrase)|| i == n-1  || (data_array.space[i-1]>=params.phrasespacing)|| (data_array.speed[i-1]<=params.speed)*params.pltint) {
 
           area = this.makearea(lineheight+1,params.showvol,params.showpit)
-          area_amp = this.makearea2(lineheight+1,3)
+          area_amp = this.makearea2(lineheight+1,6)
           q = amp.t.findIndex(element => element > parseFloat(data_array.start[j]))
           p = amp.t.findIndex(element => element > parseFloat(data_array.end[i-1]));
           k = data_array.start[j]
@@ -1074,8 +1074,8 @@ if (this.params.n_avg>1) {
           .attr("id", `textshow`)
           .attr("text-anchor", "middle")
           .attr("x", (this.xScale(data_array.timeloc[i] - data_array.start[j] )))
-          .attr("y", (linespacing) * (lineheight+1)-2)
-          .attr("font-size", this.params.font/20+ "em")
+          .attr("y", (linespacing) * (lineheight+1)-5)
+          .attr("font-size", this.params.font/15+ "em")
           .attr("dy", .35 + "em")
           .attr("vertical-align", "middle")
           .attr('fill','black')

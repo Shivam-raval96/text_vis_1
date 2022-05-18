@@ -12,16 +12,16 @@ paths = [
 ]
 
 names = [
- 'TED1',
-  'TED2',
-  'TED3',
-  'TED4',
-  'TED5',
-  'TED6',
-  'TED7',
-  'TED8',
-  'TED9',
-  'TED10',
+ 'Bill Gates',
+  'AlGore',
+  'Celeste Headlee: Better Conversation',
+  'Tim Urban: Procrastinator',
+  'Hyeonseo Lee: Escape from North Korea',
+  'Pamela Meyer: Spot a Liar',
+  'Lera Boroditsky: Language shapes thoughts',
+  'Sir Ken Robinson: Schools kill Creativity',
+  'Finale',
+  'Angela Duckworth: Passion and Perseverance',
 
 ]
 paths2 = [

@@ -1,7 +1,7 @@
 var params = {
-  font: 12,
+  font: 1.5,
   curve: 100,
-  ampcurve:15,
+  ampcurve:4,
   curveopacity:1,
   border:1,
   showtext: true,
@@ -10,7 +10,7 @@ var params = {
   curve_color: "#b0c4de",
   text_color: "#000000",
   n_avg: 1,
-  zoomlvl: 0.8,
+  zoomlvl: 1,
   panx: 50,
   pany: 50,
   showbold: false,
@@ -36,8 +36,8 @@ var params = {
   abstr:false,
   zoomon:false,
   gradient:true,
-  height:1.5,
-  width:1,
+  height:2.5,
+  width:1.5,
   showstats:false,
   cmap:false
   //bold_value: 1

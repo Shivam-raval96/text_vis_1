@@ -20,7 +20,7 @@
   <title> Speech Visualization Demo</title>
 </head>
 <body>
-<p style="font-size:13px;">
+<p style="font-size:17px;">
   Instructions:</br>
   Visual show pitch(background color) and amplitude (black curve inside a tile). White spaces are pauses. Each line ends show the same time duration of speech (default 10 seconds) <br>
   Click on any tiled to start a video from that point, click the curve again to stop. <br>
@@ -35,14 +35,14 @@
 </p>
 
 
-<div id="player0" style="width: 200px; height: 200px;left: 85%; top: 60%;position:fixed"></div>
+<div id="player0" style="width: 600px; height: 600px;left: 85%; top: 60%;position:fixed"></div>
 <!-- Create a div where the graph will take place -->
 <div class="container" style = "display:flex;width: 80%">
   <div id="my_dataviz" class="fixed"  style = "top: 0px;left: 0px;width: 50%" ></div>
   <div id="my_dataviz2" class="flex-item" style = "flex-grow: 0.5;zoom:200%; top: 30%; margin: 50px 0px 0px 100px;"></div>
 
 </div>
-<div id="sliderdiv" class="relative"  style="width: 200px; height: 200px;left: 85%; top: 55%;position:fixed" ></div>
+<div id="sliderdiv" class="relative"  style="width: 600px; height: 200px;left: 85%; top: 55%;position:fixed" ></div>
 <script>
   // no mean
 

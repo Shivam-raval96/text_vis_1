@@ -810,7 +810,7 @@ if (this.params.n_avg>1) {
         if ( (+data_array.end[i] - data_array.start[m] >=t_words)*(!params.pltint*!params.pltphrase)|| i == n-1  || (data_array.space[i-1]>=params.phrasespacing)|| (data_array.speed[i-1]<=params.speed)*params.pltint) {
 
           area = this.makearea(lineheight+1,params.showvol,params.showpit)
-          area_amp = this.makearea2(lineheight+1,8)
+          area_amp = this.makearea2(lineheight+1,7)
           q = amp.t.findIndex(element => element > parseFloat(data_array.start[j]))
           p = amp.t.findIndex(element => element > parseFloat(data_array.end[i-1]));
           k = data_array.start[j]

@@ -178,7 +178,7 @@ let params_default = params
 
 
   gui.add(params, 'pltint').name('Intonation View').listen().onChange(function(){
-    if (params.pltint== true){params.height = 12}else{params.height = params_default.height}
+    if (params.pltint== true){params.height = 14}else{params.height = 2.5}
     clear_svg(num+1)
     make_viz_array(data_array,amp)
 
@@ -193,7 +193,7 @@ let params_default = params
 
 
   gui.add(params, 'pltphrase').name('Phrase View').listen().onChange(function(){
-    if (params.pltphrase == true){params.height = 5}else{params.height = 1.5}
+    if (params.pltphrase == true){params.height = 14}else{params.height = 2.5}
     clear_svg(num+1)
     make_viz_array(data_array,amp)
   });

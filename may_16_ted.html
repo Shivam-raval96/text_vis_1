@@ -671,12 +671,13 @@ if (this.params.n_avg>1) {
         let w = 1
         let rect = viz.svg.selectAll('.movingPoint')
           .attr('id','pointer')
-          .attr('x', viz.xScale(k)-w)
+          .attr('x', viz.xScale(k)-w/2)
           .attr('y', (l - 1) * viz.linespacing)
-          .attr('width', w)
+          .attr('width', 3*w)
           .attr('height', viz.linespacing )//80)
           //.attr('stroke', 'black')
-          .attr('fill', '#962a2a');
+          .attr('fill', '#962a2a')
+        .attr('opacity', 0.3);
 
 
         /*let duration = 0

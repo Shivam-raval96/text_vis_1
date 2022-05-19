@@ -710,7 +710,7 @@ if (this.params.n_avg>1) {
           console.log(viz.ends[i - 1]- viz.starts[i-1], viz.xScale(viz.ends[i - 1]- viz.starts[i-1] ))
 
           rect.transition().ease(d3.easeLinear)
-            .duration(duration*1000+300).delay(delay)
+            .duration(duration*1000+500).delay(delay)
             .attr('x', (viz.xScale(viz.ends[i - 1]- viz.starts[i-1] )))
             .attr('y', ( i-1) * viz.linespacing)
 

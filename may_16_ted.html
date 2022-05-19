@@ -31,7 +31,7 @@
   [Intonation View]: Check to end a line after a slower speed (Rate of utterance) is detected. Change this value using the [Speed Cutoff] (default "slow speed" is 15 letters/sec). A blue bar at the end indicated an intonation break<br>
   [Phrase View]: Check to end a line after a long pause is detected. Change the value of long pause to cutoff after using the [Postspace Cutoff] (default pause length is 0.3 sec)<br>
   Refresh browser or press Reset Viz to begin again.<br>
-  <br>
+  <br><br>
 </p>
 
 
@@ -1041,7 +1041,7 @@ if (this.params.n_avg>1) {
         .attr("id", `textshow`)
         .attr("text-anchor", "middle")
         .attr("x", (this.xScale(this.params.num_words/2)))
-        .attr("y", -11)
+        .attr("y", -12)
         .attr("font-size", 1.2+ "em")
         .attr("dy", .35 + "em")
         .attr("vertical-align", "middle")
@@ -1064,7 +1064,7 @@ if (this.params.n_avg>1) {
       let j=0
 
       for (let i = 0; i <this.n_print-1; i++) {
-        if ( (+data_array.end[i] - data_array.start[j] >= t_words)*(!this.params.pltint )|| (this.params.pltphrase==true)*(!this.params.pltint ) || (data_array.speed[i-1]<=params.speed)*params.pltint || (data_array.space[i-1]>=params.phrasespacing)*params.pltphrase){
+        if ( (+data_array.end[i] - data_array.start[j] >= t_words)*(!this.params.pltint )|| (data_array.speed[i-1]<=params.speed)*params.pltint || (data_array.space[i-1]>=params.phrasespacing)*params.pltphrase){
           // if ( (data_array.timeloc[i] - data_array.timeloc[j] > t_words)*(!params.pltphrase) || i == n-1  || (data_array.space[i-1]>params.phrasespacing)*params.pltphrase){
 
           j = i

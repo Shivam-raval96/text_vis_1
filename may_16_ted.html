@@ -178,7 +178,7 @@ let params_default = params
 
 
   gui.add(params, 'pltint').name('Intonation View').listen().onChange(function(){
-    if (params.pltint== true){params.height = 40}else{params.height = params_default.height}
+    if (params.pltint== true){params.height = 12}else{params.height = params_default.height}
     clear_svg(num+1)
     make_viz_array(data_array,amp)
 

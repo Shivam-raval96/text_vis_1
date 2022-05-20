@@ -34,6 +34,7 @@
   <br><br>
 </p>
 
+<canvas class="canvas" width="500" height="500"></canvas>
 
 <div id="player0" style="width: 600px; height: 600px;left: 85%; top: 60%;position:fixed"></div>
 <!-- Create a div where the graph will take place -->
@@ -1207,6 +1208,31 @@ if (this.params.n_avg>1) {
     }
 
     make_viz(){
+      function setupCanvas(canvas) {
+        // Get the device pixel ratio, falling back to 1.
+        var dpr = window.devicePixelRatio || 1;
+        // Get the size of the canvas in CSS pixels.
+        var rect = canvas.getBoundingClientRect();
+        // Give the canvas pixel dimensions of their CSS
+        // size * the device pixel ratio.
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        var ctx = canvas.getContext('2d');
+        // Scale all drawing operations by the dpr, so you
+        // don't have to worry about the difference.
+        ctx.scale(dpr, dpr);
+        return ctx;
+      }
+
+// Now this line will be the same size on the page
+// but will look sharper on high-DPI devices!
+      var ctx = setupCanvas(document.querySelector('.canvas'));
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(100, 100);
+      ctx.lineTo(200, 200);
+      ctx.stroke();
+      
       // console.log(this.params.name0)
 
 

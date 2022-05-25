@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Two Pages One Script</title>
+  <link rel="stylesheet" href="./common.css" />
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
+  <script src="https://unpkg.com/mathjs@10.1.0/lib/browser/math.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript" src="names1.js"></script>
+  <script type="text/javascript" src="params.js"></script>
+  <script type="text/javascript" src="player.js"></script>
+</head>
+<ul>
+  <li><a href="page_one.html" class="posts" >Home</a>
+  <li><a href="page_two.html" class="users">ZoomedInView</a>
+  <li><a href="instructions.html">Details</a></li>
+  <li style="float:right"><a href="#about">About</a></li>
+</ul>
+
+<body >
+
+<div id="my_dataviz" class="fixed"  style = "margin: 10px 0px 0px 10px;" >
+<p style="font-size:14px;">
+  Visual show pitch(background color) and amplitude (black curve inside a tile). White spaces are pauses. Each line ends show the same time duration of speech (default 10 seconds) <br>
+  Click on any tiled to start a video from that point, click the curve again to stop. <br>
+  Change the multiplier for [Amplitude Curve height] or [Font Size] by changing the corresponding value.<br>
+  Click [Show/hide Text] and the [Show/hide Stats] to view the text or summary statistics.<br>
+  [Norm volume]: normalizes the volume to values between 0 and 1.<br>
+  [Alt Colormap]: Change the colormap to Visualize relative pitch changes between (Avg pitch +- 2 sigma)
+  [Intonation View]: Check to end a line after a slower speed (Rate of utterance) is detected. </br>Change this value using the [Speed Cutoff] (default "slow speed" is 15 letters/sec). A blue bar at the end indicated an intonation break<br>
+  [Phrase View]: Check to end a line after a long pause is detected. Change the value of long pause to cutoff after using the [Postspace Cutoff] (default pause length is 0.3 sec)<br>
+  Refresh browser or press Reset Viz to begin again.<br>
+  <br><br>
+</p>
+</div>
+</body>
+
+</html>

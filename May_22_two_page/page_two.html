@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Two Pages One Script</title>
+  <link rel="stylesheet" href="./common.css" />
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
+  <script src="https://unpkg.com/mathjs@10.1.0/lib/browser/math.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="text/javascript" src="names1.js"></script>
+  <script type="text/javascript" src="params.js"></script>
+  <script type="text/javascript" src="player.js"></script>
+</head>
+<ul>
+  <li><a href="page_one.html" class="posts" >Home</a>
+  <li><a href="page_two.html" class="users">ZoomedInView</a>
+  <li><a href="instructions.html">Details</a></li>
+  <li style="float:right"><a href="#about">About</a></li>
+</ul>
+
+<body id="users">
+
+
+<main>
+
+</main>
+<div id="player0" style="width: 250px; height: 250px;left: 77%; top: 2%;position:fixed"></div>
+
+<div id="my_dataviz" class="fixed"  style = "margin: 10px 0px 0px 10px; overflow: hidden; width: 70%; border: 8px; border-style: ridge;" ></div>
+
+<div id = "buttons" style="width: 360px; border: 8px; border-style: ridge; height: 300px;left: 73%; top: 35%;position:fixed; background:#c9c9c9 ">
+</div>
+<div id="zoomslider" class="relative"  style="width: 30px; height: 30px;left: 75%; top: 37%;position:fixed" ></div>
+<div id="altcmap" class="button" title="Hello World!" style="font-size:13px; width: 55px; height: 50px;left: 90%; top: 37%;position:fixed" onclick="getAltcMapView()" >Normalized Colorscale</div>
+<p id="phrase"  class="button" style="font-size:13px; width: 100px; height: 40px;border: 2px solid black;left: 74%; top: 47%;position:fixed" onclick="getPhraseView()">Cutoff at LongPhrase</p>
+<div id="phraseslider" class="relative"  style="font-size:14px;width: 30px; height: 30px;left: 85%; top: 50%;position:fixed" >LongPhrase Selector</div>
+<p id="intonation"  class="button" style=" font-size:14px; border: 2px solid black;left: 74%; top: 57%;position:fixed" onclick="getIntonationView()">Cutoff at IntonationBreak</p>
+<div id="intonationslider" class="relative"  style="font-size:14px;width: 00px; height: 00px;left: 87%; top: 60%;position:fixed" >IntonationBreak Selector</div>
+
+<div id="gradient" class="relative"  style="width: 10px; height: 10px;left: 73%; top: 81%;position:fixed" ></div>
+<div id="amplitude" class="relative"  style="width: 10px; height: 10px;left: 73.5%; top: 90%;position:fixed" >Amplitude</div>
+
+
+<script>console.log("Hello")//https://mui.com/ react tools</script>
+<script src="./speech.js"></script>
+
+</body>
+
+</html>

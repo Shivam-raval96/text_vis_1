@@ -1,4 +1,4 @@
-
+document.body.style.zoom = "100%"
 function load_audio(path2) {
   var amp ={
     t:[],

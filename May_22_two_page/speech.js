@@ -1,3 +1,4 @@
+document.body.style.zoom = "100%"
 var num = 0
 params.keepplaying = false
 id = document.cookie[0]
